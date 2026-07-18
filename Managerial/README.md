@@ -12,11 +12,9 @@ This section contains structured notes, highlights, and summaries from manageria
 
 ## 📚 Books & Resources
 
-> 🚧 **Coming Soon** — Summaries will be added here as they are completed.
-
 | # | Title | Author | Status |
 |---|-------|--------|--------|
-| — | *(no entries yet)* | — | — |
+| 1 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
 
 ---
 

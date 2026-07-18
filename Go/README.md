@@ -12,11 +12,9 @@ This section contains structured notes, highlights, and summaries from Go-relate
 
 ## 📚 Books & Resources
 
-> 🚧 **Coming Soon** — Summaries will be added here as they are completed.
-
 | # | Title | Author | Status |
 |---|-------|--------|--------|
-| — | *(no entries yet)* | — | — |
+| 1 | [The Go Programming Language](./the-go-programming-language/README.md) | Alan A. A. Donovan & Brian W. Kernighan | 📖 In Progress |
 
 ---
 
