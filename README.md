@@ -71,10 +71,14 @@ Learning/
 │
 └── 🛠️ Pragmatic/              ← Software craft & philosophy books
     ├── README.md
-    └── the-pragmatic-programmer/
+    ├── the-pragmatic-programmer/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   └── chapters/          ← 9 chapter notes
+    └── clean-architecture/
         ├── README.md
         ├── key-takeaways.md
-        └── chapters/          ← 9 chapter notes
+        └── chapters/          ← 34 chapter notes
 ```
 
 ---
@@ -89,7 +93,8 @@ Learning/
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
 | 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
-| | **Total** | **2 complete · 4 in progress** |
+| 🛠️ Pragmatic | [Clean Architecture](./Pragmatic/clean-architecture/README.md) | ✅ Complete |
+| | **Total** | **3 complete · 4 in progress** |
 
 ---
 

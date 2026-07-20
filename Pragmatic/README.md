@@ -15,6 +15,7 @@ This section contains structured notes, highlights, and summaries from books foc
 | # | Title | Author | Status |
 |---|-------|--------|--------|
 | 1 | [The Pragmatic Programmer](./the-pragmatic-programmer/README.md) | Dave Thomas & Andy Hunt | 📖 In Progress |
+| 2 | [Clean Architecture](./clean-architecture/README.md) | Robert C. Martin | ✅ Complete |
 
 ---
 
