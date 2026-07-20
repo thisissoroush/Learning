@@ -16,6 +16,7 @@ This section contains structured notes, highlights, and summaries from books foc
 |---|-------|--------|--------|
 | 1 | [The Pragmatic Programmer](./the-pragmatic-programmer/README.md) | Dave Thomas & Andy Hunt | 📖 In Progress |
 | 2 | [Clean Architecture](./clean-architecture/README.md) | Robert C. Martin | ✅ Complete |
+| 3 | [Microservices Patterns](./microservices-patterns/README.md) | Chris Richardson | ✅ Complete |
 
 ---
 

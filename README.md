@@ -75,10 +75,14 @@ Learning/
     │   ├── README.md
     │   ├── key-takeaways.md
     │   └── chapters/          ← 9 chapter notes
-    └── clean-architecture/
+    ├── clean-architecture/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   └── chapters/          ← 34 chapter notes
+    └── microservices-patterns/
         ├── README.md
         ├── key-takeaways.md
-        └── chapters/          ← 34 chapter notes
+        └── chapters/          ← 13 chapter notes
 ```
 
 ---
@@ -94,7 +98,8 @@ Learning/
 | 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
 | 🛠️ Pragmatic | [Clean Architecture](./Pragmatic/clean-architecture/README.md) | ✅ Complete |
-| | **Total** | **3 complete · 4 in progress** |
+| 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
+| | **Total** | **4 complete · 4 in progress** |
 
 ---
 
