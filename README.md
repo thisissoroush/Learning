@@ -79,10 +79,14 @@ Learning/
     │   ├── README.md
     │   ├── key-takeaways.md
     │   └── chapters/          ← 34 chapter notes
-    └── microservices-patterns/
+    ├── microservices-patterns/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   └── chapters/          ← 13 chapter notes
+    └── domain-driven-design/
         ├── README.md
         ├── key-takeaways.md
-        └── chapters/          ← 13 chapter notes
+        └── chapters/          ← 15 chapter notes
 ```
 
 ---
@@ -99,7 +103,8 @@ Learning/
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
 | 🛠️ Pragmatic | [Clean Architecture](./Pragmatic/clean-architecture/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
-| | **Total** | **4 complete · 4 in progress** |
+| 🛠️ Pragmatic | [Domain-Driven Design](./Pragmatic/domain-driven-design/README.md) | ✅ Complete |
+| | **Total** | **5 complete · 4 in progress** |
 
 ---
 
