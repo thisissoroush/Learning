@@ -60,10 +60,14 @@ Learning/
 │   │   ├── README.md
 │   │   ├── key-takeaways.md
 │   │   └── chapters/          ← 9 chapter notes
-│   └── the-managers-path/
+│   ├── the-managers-path/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 9 chapter notes
+│   └── staff-engineer/
 │       ├── README.md
 │       ├── key-takeaways.md
-│       └── chapters/          ← 9 chapter notes
+│       └── chapters/          ← 12 chapter notes
 │
 └── 🛠️ Pragmatic/              ← Software craft & philosophy books
     ├── README.md
@@ -83,8 +87,9 @@ Learning/
 | 🐹 Go Programming | [Concurrency in Go](./Go/concurrency-in-go/README.md) | ✅ Complete |
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
+| 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
-| | **Total** | **1 complete · 4 in progress** |
+| | **Total** | **2 complete · 4 in progress** |
 
 ---
 

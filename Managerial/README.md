@@ -16,6 +16,7 @@ This section contains structured notes, highlights, and summaries from manageria
 |---|-------|--------|--------|
 | 1 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
 | 2 | [Team Topologies](./team-topologies/README.md) | Matthew Skelton & Manuel Pais | 📖 In Progress |
+| 3 | [Staff Engineer](./staff-engineer/README.md) | Will Larson | ✅ Complete |
 
 ---
 
@@ -23,7 +24,7 @@ This section contains structured notes, highlights, and summaries from manageria
 
 Based on the current book summaries, this section covers:
 
-- 🎯 **Career progression** — from engineer to tech lead to manager to VP/CTO
+- 🎯 **Career progression** — from engineer to tech lead to manager to VP/CTO; the Staff+ IC path
 - 👥 **Team structure & org design** — team topologies, Conway's Law, Reverse Conway Maneuver
 - 🧠 **Cognitive load management** — matching team size and scope to mental capacity
 - 🗣️ **1-on-1s & feedback** — running effective 1-1s, delivering timely and honest feedback
@@ -31,7 +32,11 @@ Based on the current book summaries, this section covers:
 - 🏗️ **Engineering culture** — bootstrapping culture, psychological safety, values under pressure
 - 📐 **Team interaction modes** — collaboration, X-as-a-service, facilitating
 - 📈 **Scaling leadership** — managing managers, multi-team dynamics, senior tech leadership
-- 🌱 **Mentoring** — guiding junior engineers, interns, and new hires without creating dependency
+- 🌱 **Mentoring & sponsoring** — guiding junior engineers; sponsorship vs. mentorship distinction
+- 🧭 **Technical strategy** — design docs, engineering strategy, engineering vision
+- ⚡ **Technical quality** — hot spots, leverage points, quality programs
+- 🎪 **Staff+ archetypes** — Tech Lead, Architect, Solver, Right Hand roles
+- 💼 **Promotion mechanics** — promotion packets, sponsors, Staff projects, visibility
 
 ---
 
