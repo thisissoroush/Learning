@@ -45,10 +45,14 @@ Learning/
 │
 ├── 🐹 Go/                     ← Go programming books
 │   ├── README.md
-│   └── the-go-programming-language/
+│   ├── the-go-programming-language/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 13 chapter notes
+│   └── concurrency-in-go/
 │       ├── README.md
 │       ├── key-takeaways.md
-│       └── chapters/          ← 13 chapter notes
+│       └── chapters/          ← 6 chapter notes
 │
 ├── 🧠 Managerial/             ← Management & leadership books
 │   ├── README.md
@@ -76,10 +80,11 @@ Learning/
 | Category | Book | Status |
 |----------|------|--------|
 | 🐹 Go Programming | [The Go Programming Language](./Go/the-go-programming-language/README.md) | 📖 In Progress |
+| 🐹 Go Programming | [Concurrency in Go](./Go/concurrency-in-go/README.md) | ✅ Complete |
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
-| | **Total** | **4 books in progress** |
+| | **Total** | **1 complete · 4 in progress** |
 
 ---
 

@@ -15,6 +15,7 @@ This section contains structured notes, highlights, and summaries from Go-relate
 | # | Title | Author | Status |
 |---|-------|--------|--------|
 | 1 | [The Go Programming Language](./the-go-programming-language/README.md) | Alan A. A. Donovan & Brian W. Kernighan | 📖 In Progress |
+| 2 | [Concurrency in Go](./concurrency-in-go/README.md) | Katherine Cox-Buday | ✅ Complete |
 
 ---
 
@@ -27,7 +28,8 @@ Based on the current book summaries, this section covers:
 - 🔧 **Functions** — closures, recursion, variadic functions, `defer`, `panic`, `recover`
 - 🧩 **Methods & interfaces** — pointer receivers, embedding, implicit interface satisfaction, type assertions, type switches
 - 🔄 **Concurrency** — goroutines, channels, `select`, pipelines, cancellation, `sync.Mutex`, race conditions
-- 📦 **Packages & modules** — Go module system, imports, `go build`, `go test`, `go vet`
+- 🚀 **Advanced concurrency** — CSP model, fan-out/in, rate limiting, heartbeats, goroutine healing, work stealing
+-  **Packages & modules** — Go module system, imports, `go build`, `go test`, `go vet`
 - 🧪 **Testing** — `go test`, table-driven tests, benchmarks, coverage, `httptest`
 - 🪞 **Reflection** — `reflect` package, dynamic type inspection, `encoding` patterns
 - ⚡ **Low-level programming** — `unsafe` package, `cgo`, memory layout, interop with C
