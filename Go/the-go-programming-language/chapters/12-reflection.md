@@ -227,3 +227,7 @@ Struct Tags:
 
 ⚠️  Reflection bypasses type safety — use carefully!
 ```
+
+---
+
+*← [Chapter 11 — Testing](11-testing.md) | [Back to Index](../README.md) | [Chapter 13 — Low-Level Programming](13-low-level-programming.md) →*

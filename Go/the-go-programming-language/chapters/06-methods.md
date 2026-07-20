@@ -251,3 +251,7 @@ ENCAPSULATION:
 METHOD VALUE:   p.Distance      (p is bound)
 METHOD EXPR:    Point.Distance  (p is first param)
 ```
+
+---
+
+*← [Chapter 5 — Functions](05-functions.md) | [Back to Index](../README.md) | [Chapter 7 — Interfaces](07-interfaces.md) →*

@@ -101,4 +101,10 @@ The book contains 100 actionable tips. Here are some of the most memorable:
 
 ---
 
+## 📋 Key Takeaways
+
+→ See [key-takeaways.md](key-takeaways.md) for the top 48 actionable insights distilled from all 9 chapters.
+
+---
+
 *← [Back to Pragmatic](../README.md)*

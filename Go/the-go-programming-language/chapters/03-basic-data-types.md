@@ -292,3 +292,7 @@ complex128  128 bits     two float64s
 bool        1 bit        true / false
 string      immutable    UTF-8 bytes, len() = bytes not chars
 ```
+
+---
+
+*← [Chapter 2 — Program Structure](02-program-structure.md) | [Back to Index](../README.md) | [Chapter 4 — Composite Types](04-composite-types.md) →*

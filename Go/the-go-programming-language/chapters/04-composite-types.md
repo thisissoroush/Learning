@@ -316,3 +316,7 @@ import "html/template"
 Key Rule: Slices, maps, and channels are reference types.
           Assigning them copies the reference, not the data.
 ```
+
+---
+
+*← [Chapter 3 — Basic Data Types](03-basic-data-types.md) | [Back to Index](../README.md) | [Chapter 5 — Functions](05-functions.md) →*

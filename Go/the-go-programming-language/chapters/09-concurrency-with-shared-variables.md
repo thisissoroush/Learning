@@ -232,3 +232,7 @@ ALWAYS:
 MANTRA: "Share memory by communicating" → prefer channels
          but sync.Mutex is fine for protecting shared state
 ```
+
+---
+
+*← [Chapter 8 — Goroutines and Channels](08-goroutines-and-channels.md) | [Back to Index](../README.md) | [Chapter 10 — Packages and the Go Tool](10-packages-and-the-go-tool.md) →*

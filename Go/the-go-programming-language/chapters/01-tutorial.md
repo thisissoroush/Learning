@@ -333,3 +333,7 @@ Go Program = packages + declarations + statements
 4. `fetch` — HTTP client
 5. `fetchall` — concurrent HTTP (goroutines + channels)
 6. `server` — HTTP server
+
+---
+
+*[Back to Index](../README.md) | [Chapter 2 — Program Structure](02-program-structure.md) →*

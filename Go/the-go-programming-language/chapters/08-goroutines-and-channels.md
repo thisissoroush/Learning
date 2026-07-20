@@ -288,3 +288,7 @@ SEMAPHORE (limit concurrency):
   tokens <- struct{}{} // acquire
   <-tokens             // release
 ```
+
+---
+
+*← [Chapter 7 — Interfaces](07-interfaces.md) | [Back to Index](../README.md) | [Chapter 9 — Concurrency with Shared Variables](09-concurrency-with-shared-variables.md) →*

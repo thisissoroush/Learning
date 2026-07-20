@@ -445,3 +445,7 @@ if err != nil {
     return nil, fmt.Errorf("context: %v", err)
 }
 ```
+
+---
+
+*← [Chapter 4 — Composite Types](04-composite-types.md) | [Back to Index](../README.md) | [Chapter 6 — Methods](06-methods.md) →*

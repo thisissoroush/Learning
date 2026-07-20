@@ -301,3 +301,7 @@ TYPE SWITCH:     switch v := x.(type) { case T: ... }
 
 ⚠️ TRAP: nil *T stored in interface ≠ nil interface
 ```
+
+---
+
+*← [Chapter 6 — Methods](06-methods.md) | [Back to Index](../README.md) | [Chapter 8 — Goroutines and Channels](08-goroutines-and-channels.md) →*

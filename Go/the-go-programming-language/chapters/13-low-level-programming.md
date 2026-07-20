@@ -223,3 +223,7 @@ MEMORY LAYOUT:
    ^                ^
    Offsetof(a)=0    Offsetof(b)=depends on alignment
 ```
+
+---
+
+*← [Chapter 12 — Reflection](12-reflection.md) | [Back to Index](../README.md)*

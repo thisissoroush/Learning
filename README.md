@@ -19,7 +19,6 @@ A curated, growing collection of **book summaries, key takeaways, and structured
 | Category | Description | Link |
 |----------|-------------|------|
 | 🐹 **Go Programming** | Summaries of Go (Golang) books — concurrency, patterns, performance & more | [Go/ →](./Go/README.md) |
-| 🟣 **.NET** | Summaries of .NET books — C#, ASP.NET Core, EF, cloud & more | [.Net/ →](./.Net/README.md) |
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
 
@@ -46,44 +45,41 @@ Learning/
 │
 ├── 🐹 Go/                     ← Go programming books
 │   ├── README.md
-│   └── <book-name>/
+│   └── the-go-programming-language/
 │       ├── README.md
 │       ├── key-takeaways.md
-│       └── chapters/
-│
-├── 🟣 .Net/                   ← .NET books (C#, ASP.NET Core, etc.)
-│   ├── README.md
-│   └── <book-name>/
-│       ├── README.md
-│       ├── key-takeaways.md
-│       └── chapters/
+│       └── chapters/          ← 13 chapter notes
 │
 ├── 🧠 Managerial/             ← Management & leadership books
 │   ├── README.md
-│   └── <book-name>/
+│   ├── team-topologies/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 9 chapter notes
+│   └── the-managers-path/
 │       ├── README.md
 │       ├── key-takeaways.md
-│       └── chapters/
+│       └── chapters/          ← 9 chapter notes
 │
 └── 🛠️ Pragmatic/              ← Software craft & philosophy books
     ├── README.md
-    └── <book-name>/
+    └── the-pragmatic-programmer/
         ├── README.md
         ├── key-takeaways.md
-        └── chapters/
+        └── chapters/          ← 9 chapter notes
 ```
 
 ---
 
 ## 📈 Progress Tracker
 
-| Category | Books Summarized | In Progress | Planned |
-|----------|:----------------:|:-----------:|:-------:|
-| 🐹 Go Programming | 0 | 1 | — |
-| 🟣 .NET | 0 | 0 | — |
-| 🧠 Managerial | 0 | 1 | — |
-| 🛠️ Pragmatic | 0 | 1 | — |
-| **Total** | **0** | **3** | **—** |
+| Category | Book | Status |
+|----------|------|--------|
+| 🐹 Go Programming | [The Go Programming Language](./Go/the-go-programming-language/README.md) | 📖 In Progress |
+| 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
+| 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
+| 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
+| | **Total** | **4 books in progress** |
 
 ---
 

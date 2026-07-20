@@ -15,20 +15,23 @@ This section contains structured notes, highlights, and summaries from manageria
 | # | Title | Author | Status |
 |---|-------|--------|--------|
 | 1 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
+| 2 | [Team Topologies](./team-topologies/README.md) | Matthew Skelton & Manuel Pais | 📖 In Progress |
 
 ---
 
 ## 🗂️ Topics Covered
 
-Once populated, this section will cover areas such as:
+Based on the current book summaries, this section covers:
 
-- 🎯 Goal setting & OKRs
-- 👥 Team building & culture
-- 🗣️ Communication & negotiation
-- 📈 Strategy & decision making
-- ⏱️ Productivity & time management
-- 🔁 Feedback & performance reviews
-- 🌱 Personal growth & leadership mindset
+- 🎯 **Career progression** — from engineer to tech lead to manager to VP/CTO
+- 👥 **Team structure & org design** — team topologies, Conway's Law, Reverse Conway Maneuver
+- 🧠 **Cognitive load management** — matching team size and scope to mental capacity
+- 🗣️ **1-on-1s & feedback** — running effective 1-1s, delivering timely and honest feedback
+- 🔁 **Performance & growth** — managing performance reviews, career development, promotions
+- 🏗️ **Engineering culture** — bootstrapping culture, psychological safety, values under pressure
+- 📐 **Team interaction modes** — collaboration, X-as-a-service, facilitating
+- 📈 **Scaling leadership** — managing managers, multi-team dynamics, senior tech leadership
+- 🌱 **Mentoring** — guiding junior engineers, interns, and new hires without creating dependency
 
 ---
 

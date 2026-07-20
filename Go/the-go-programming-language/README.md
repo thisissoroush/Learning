@@ -63,3 +63,9 @@ Go inherits:
 - **From C**: expression syntax, control flow, basic data types, pointers, efficiency
 - **From Oberon/Pascal**: package system, imports, declarations  
 - **From CSP**: goroutines, channels (communicate by sharing, don't share memory to communicate)
+
+---
+
+## 📋 Key Takeaways
+
+→ See [key-takeaways.md](key-takeaways.md) for the top 34 actionable insights distilled from all 13 chapters.

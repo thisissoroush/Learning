@@ -191,3 +191,7 @@ COMMANDS:
   go test -cover      coverage
   go test -race       data races
 ```
+
+---
+
+*← [Chapter 10 — Packages and the Go Tool](10-packages-and-the-go-tool.md) | [Back to Index](../README.md) | [Chapter 12 — Reflection](12-reflection.md) →*

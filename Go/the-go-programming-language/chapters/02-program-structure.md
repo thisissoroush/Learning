@@ -275,3 +275,7 @@ func init() {
 │  Lowercase   → unexported (package-private)          │
 └─────────────────────────────────────────────────────┘
 ```
+
+---
+
+*← [Chapter 1 — Tutorial](01-tutorial.md) | [Back to Index](../README.md) | [Chapter 3 — Basic Data Types](03-basic-data-types.md) →*

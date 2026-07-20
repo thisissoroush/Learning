@@ -130,4 +130,10 @@ Team structures must **evolve** over time. A topology that works during discover
 
 ---
 
+## 📋 Key Takeaways
+
+→ See [key-takeaways.md](key-takeaways.md) for the top 25 actionable insights distilled from all 9 chapters.
+
+---
+
 *← [Back to Managerial Index](../README.md)*

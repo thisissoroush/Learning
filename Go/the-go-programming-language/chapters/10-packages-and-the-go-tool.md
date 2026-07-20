@@ -199,3 +199,7 @@ KEY COMMANDS:
   go get     fetch dependency
   go mod     module management
 ```
+
+---
+
+*← [Chapter 9 — Concurrency with Shared Variables](09-concurrency-with-shared-variables.md) | [Back to Index](../README.md) | [Chapter 11 — Testing](11-testing.md) →*
