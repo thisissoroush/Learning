@@ -83,7 +83,11 @@ Learning/
     │   ├── README.md
     │   ├── key-takeaways.md
     │   └── chapters/          ← 13 chapter notes
-    └── domain-driven-design/
+    ├── domain-driven-design/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   └── chapters/          ← 15 chapter notes
+    └── software-architecture-the-hard-parts/
         ├── README.md
         ├── key-takeaways.md
         └── chapters/          ← 15 chapter notes
@@ -104,7 +108,8 @@ Learning/
 | 🛠️ Pragmatic | [Clean Architecture](./Pragmatic/clean-architecture/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Domain-Driven Design](./Pragmatic/domain-driven-design/README.md) | ✅ Complete |
-| | **Total** | **5 complete · 4 in progress** |
+| 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
+| | **Total** | **6 complete · 4 in progress** |
 
 ---
 

@@ -18,6 +18,7 @@ This section contains structured notes, highlights, and summaries from books foc
 | 2 | [Clean Architecture](./clean-architecture/README.md) | Robert C. Martin | ✅ Complete |
 | 3 | [Microservices Patterns](./microservices-patterns/README.md) | Chris Richardson | ✅ Complete |
 | 4 | [Domain-Driven Design](./domain-driven-design/README.md) | Eric Evans | ✅ Complete |
+| 5 | [Software Architecture: The Hard Parts](./software-architecture-the-hard-parts/README.md) | Ford, Richards, Sadalage & Dehghani | ✅ Complete |
 
 ---
 
