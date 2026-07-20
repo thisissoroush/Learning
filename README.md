@@ -19,6 +19,7 @@ A curated, growing collection of **book summaries, key takeaways, and structured
 | Category | Description | Link |
 |----------|-------------|------|
 | 🐹 **Go Programming** | Summaries of Go (Golang) books — concurrency, patterns, performance & more | [Go/ →](./Go/README.md) |
+| 🔷 **C# Programming** | Summaries of C# books — async/await, parallel, reactive, and dataflow | [CSharp/ →](./CSharp/README.md) |
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
 
@@ -53,6 +54,13 @@ Learning/
 │       ├── README.md
 │       ├── key-takeaways.md
 │       └── chapters/          ← 6 chapter notes
+│
+├── 🔷 CSharp/                 ← C# programming books
+│   ├── README.md
+│   └── concurrency-in-csharp-cookbook/
+│       ├── README.md
+│       ├── key-takeaways.md
+│       └── chapters/          ← 14 chapter notes
 │
 ├── 🧠 Managerial/             ← Management & leadership books
 │   ├── README.md
@@ -101,6 +109,7 @@ Learning/
 |----------|------|--------|
 | 🐹 Go Programming | [The Go Programming Language](./Go/the-go-programming-language/README.md) | 📖 In Progress |
 | 🐹 Go Programming | [Concurrency in Go](./Go/concurrency-in-go/README.md) | ✅ Complete |
+| 🔷 C# Programming | [Concurrency in C# Cookbook, 2nd Ed.](./CSharp/concurrency-in-csharp-cookbook/README.md) | ✅ Complete |
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
 | 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
@@ -109,7 +118,7 @@ Learning/
 | 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Domain-Driven Design](./Pragmatic/domain-driven-design/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
-| | **Total** | **6 complete · 4 in progress** |
+| | **Total** | **7 complete · 4 in progress** |
 
 ---
 
