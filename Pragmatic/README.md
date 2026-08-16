@@ -19,6 +19,8 @@ This section contains structured notes, highlights, and summaries from books foc
 | 3 | [Microservices Patterns](./microservices-patterns/README.md) | Chris Richardson | ✅ Complete |
 | 4 | [Domain-Driven Design](./domain-driven-design/README.md) | Eric Evans | ✅ Complete |
 | 5 | [Software Architecture: The Hard Parts](./software-architecture-the-hard-parts/README.md) | Ford, Richards, Sadalage & Dehghani | ✅ Complete |
+| 6 | [System Design Interview Vol. 2](./system-design-interview-v2/README.md) | Alex Xu & Sahn Lam | ✅ Complete |
+| 7 | [System Design Interview (2nd Ed.)](./system-design-interview/README.md) | Alex Xu | ✅ Complete |
 
 ---
 

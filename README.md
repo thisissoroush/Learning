@@ -95,10 +95,22 @@ Learning/
     │   ├── README.md
     │   ├── key-takeaways.md
     │   └── chapters/          ← 15 chapter notes
-    └── software-architecture-the-hard-parts/
+    ├── software-architecture-the-hard-parts/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   └── chapters/          ← 15 chapter notes
+    ├── system-design-interview-v2/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   ├── generate_images.py ← image generator script
+    │   ├── images/            ← 15 architecture diagrams (PNG)
+    │   └── chapters/          ← 13 chapter notes
+    └── system-design-interview/
         ├── README.md
         ├── key-takeaways.md
-        └── chapters/          ← 15 chapter notes
+        ├── generate_images.py ← image generator script
+        ├── images/            ← 15 architecture diagrams (PNG)
+        └── chapters/          ← 16 chapter notes
 ```
 
 ---
@@ -118,7 +130,9 @@ Learning/
 | 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Domain-Driven Design](./Pragmatic/domain-driven-design/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
-| | **Total** | **7 complete · 4 in progress** |
+| 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
+| 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
+| | **Total** | **9 complete · 4 in progress** |
 
 ---
 
