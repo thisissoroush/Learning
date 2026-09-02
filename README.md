@@ -125,6 +125,7 @@ Learning/
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
 | 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
+| 🧠 Managerial | [Become an Effective Software Engineering Manager](./Managerial/become-effective-manager/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [The Pragmatic Programmer](./Pragmatic/the-pragmatic-programmer/README.md) | 📖 In Progress |
 | 🛠️ Pragmatic | [Clean Architecture](./Pragmatic/clean-architecture/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Microservices Patterns](./Pragmatic/microservices-patterns/README.md) | ✅ Complete |
@@ -132,7 +133,7 @@ Learning/
 | 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
-| | **Total** | **9 complete · 4 in progress** |
+| | **Total** | **10 complete · 4 in progress** |
 
 ---
 

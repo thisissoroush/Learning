@@ -17,6 +17,7 @@ This section contains structured notes, highlights, and summaries from manageria
 | 1 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
 | 2 | [Team Topologies](./team-topologies/README.md) | Matthew Skelton & Manuel Pais | 📖 In Progress |
 | 3 | [Staff Engineer](./staff-engineer/README.md) | Will Larson | ✅ Complete |
+| 4 | [Become an Effective Software Engineering Manager](./become-effective-manager/README.md) | James Stanier | ✅ Complete |
 
 ---
 
