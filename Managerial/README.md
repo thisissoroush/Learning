@@ -14,10 +14,11 @@ This section contains structured notes, highlights, and summaries from manageria
 
 | # | Title | Author | Status |
 |---|-------|--------|--------|
-| 1 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
-| 2 | [Team Topologies](./team-topologies/README.md) | Matthew Skelton & Manuel Pais | 📖 In Progress |
-| 3 | [Staff Engineer](./staff-engineer/README.md) | Will Larson | ✅ Complete |
-| 4 | [Become an Effective Software Engineering Manager](./become-effective-manager/README.md) | James Stanier | ✅ Complete |
+| 1 | [Engineering Leadership: The Hard Parts](./engineering-leadership-the-hard-parts/README.md) | Juan Pablo Buriticá & James Turnbull | ✅ Complete |
+| 2 | [The Manager's Path](./the-managers-path/README.md) | Camille Fournier | 📖 In Progress |
+| 3 | [Team Topologies](./team-topologies/README.md) | Matthew Skelton & Manuel Pais | 📖 In Progress |
+| 4 | [Staff Engineer](./staff-engineer/README.md) | Will Larson | ✅ Complete |
+| 5 | [Become an Effective Software Engineering Manager](./become-effective-manager/README.md) | James Stanier | ✅ Complete |
 
 ---
 
@@ -25,6 +26,8 @@ This section contains structured notes, highlights, and summaries from manageria
 
 Based on the current book summaries, this section covers:
 
+- 🌪️ **Leading in chaos** — navigating rapid growth, organizational dysfunction, crisis mode
+- 🧠 **Psychological safety** — creating safe environments where people surface problems early
 - 🎯 **Career progression** — from engineer to tech lead to manager to VP/CTO; the Staff+ IC path
 - 👥 **Team structure & org design** — team topologies, Conway's Law, Reverse Conway Maneuver
 - 🧠 **Cognitive load management** — matching team size and scope to mental capacity
@@ -36,6 +39,8 @@ Based on the current book summaries, this section covers:
 - 🌱 **Mentoring & sponsoring** — guiding junior engineers; sponsorship vs. mentorship distinction
 - 🧭 **Technical strategy** — design docs, engineering strategy, engineering vision
 - ⚡ **Technical quality** — hot spots, leverage points, quality programs
+- 💪 **Team resilience** — burnout prevention, sustainable pace, building capable teams
+- 🚀 **Delivery & pragmatism** — shipping in constrained environments, tech debt management
 - 🎪 **Staff+ archetypes** — Tech Lead, Architect, Solver, Right Hand roles
 - 💼 **Promotion mechanics** — promotion packets, sponsors, Staff projects, visibility
 

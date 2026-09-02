@@ -122,6 +122,7 @@ Learning/
 | 🐹 Go Programming | [The Go Programming Language](./Go/the-go-programming-language/README.md) | 📖 In Progress |
 | 🐹 Go Programming | [Concurrency in Go](./Go/concurrency-in-go/README.md) | ✅ Complete |
 | 🔷 C# Programming | [Concurrency in C# Cookbook, 2nd Ed.](./CSharp/concurrency-in-csharp-cookbook/README.md) | ✅ Complete |
+| 🧠 Managerial | [Engineering Leadership: The Hard Parts](./Managerial/engineering-leadership-the-hard-parts/README.md) | ✅ Complete |
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |
 | 🧠 Managerial | [Staff Engineer](./Managerial/staff-engineer/README.md) | ✅ Complete |
@@ -133,7 +134,7 @@ Learning/
 | 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
-| | **Total** | **10 complete · 4 in progress** |
+| | **Total** | **11 complete · 4 in progress** |
 
 ---
 
