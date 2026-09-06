@@ -22,6 +22,7 @@ A curated, growing collection of **book summaries, key takeaways, and structured
 | 🔷 **C# Programming** | Summaries of C# books — async/await, parallel, reactive, and dataflow | [CSharp/ →](./CSharp/README.md) |
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
+| 🐍 **Python / Django** | Summaries of Python web development books — Django, Docker, production practices | [Python/ →](./Python/README.md) |
 
 ---
 
@@ -43,6 +44,21 @@ The summaries are intentionally **concise** — enough to refresh your memory wi
 Learning/
 │
 ├── 📄 README.md               ← You are here
+│
+├── 🐍 Python/                 ← Python / Django books
+│   ├── README.md
+│   ├── django-for-professionals/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   ├── generate_images.py
+│   │   ├── images/            ← 4 architecture diagrams (PNG)
+│   │   └── chapters/          ← 19 chapter notes
+│   └── two-scoops-of-django/
+│       ├── README.md
+│       ├── key-takeaways.md
+│       ├── generate_images.py
+│       ├── images/            ← architecture diagrams (PNG)
+│       └── chapters/          ← chapter notes
 │
 ├── 🐹 Go/                     ← Go programming books
 │   ├── README.md
@@ -141,7 +157,9 @@ Learning/
 | 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Cracking the Coding Interview, 6th Ed.](./Pragmatic/cracking-the-coding-interview/README.md) | ✅ Complete |
-| | **Total** | **12 complete · 4 in progress** |
+| 🐍 Python | [Django for Professionals](./Python/django-for-professionals/README.md) | ✅ Complete |
+| 🐍 Python | [Two Scoops of Django 3.x](./Python/two-scoops-of-django/README.md) | ✅ Complete |
+| | **Total** | **14 complete · 4 in progress** |
 
 ---
 
