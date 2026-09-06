@@ -105,12 +105,18 @@ Learning/
     │   ├── generate_images.py ← image generator script
     │   ├── images/            ← 15 architecture diagrams (PNG)
     │   └── chapters/          ← 13 chapter notes
-    └── system-design-interview/
+    ├── system-design-interview/
+    │   ├── README.md
+    │   ├── key-takeaways.md
+    │   ├── generate_images.py ← image generator script
+    │   ├── images/            ← 15 architecture diagrams (PNG)
+    │   └── chapters/          ← 16 chapter notes
+    └── cracking-the-coding-interview/
         ├── README.md
         ├── key-takeaways.md
         ├── generate_images.py ← image generator script
-        ├── images/            ← 15 architecture diagrams (PNG)
-        └── chapters/          ← 16 chapter notes
+        ├── images/            ← 12 DS&A diagrams (PNG)
+        └── chapters/          ← 24 chapter notes
 ```
 
 ---
@@ -134,7 +140,8 @@ Learning/
 | 🛠️ Pragmatic | [Software Architecture: The Hard Parts](./Pragmatic/software-architecture-the-hard-parts/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
-| | **Total** | **11 complete · 4 in progress** |
+| 🛠️ Pragmatic | [Cracking the Coding Interview, 6th Ed.](./Pragmatic/cracking-the-coding-interview/README.md) | ✅ Complete |
+| | **Total** | **12 complete · 4 in progress** |
 
 ---
 

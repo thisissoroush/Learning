@@ -21,6 +21,7 @@ This section contains structured notes, highlights, and summaries from books foc
 | 5 | [Software Architecture: The Hard Parts](./software-architecture-the-hard-parts/README.md) | Ford, Richards, Sadalage & Dehghani | ✅ Complete |
 | 6 | [System Design Interview Vol. 2](./system-design-interview-v2/README.md) | Alex Xu & Sahn Lam | ✅ Complete |
 | 7 | [System Design Interview (2nd Ed.)](./system-design-interview/README.md) | Alex Xu | ✅ Complete |
+| 8 | [Cracking the Coding Interview, 6th Ed.](./cracking-the-coding-interview/README.md) | Gayle Laakmann McDowell | ✅ Complete |
 
 ---
 
@@ -37,6 +38,9 @@ Based on the current book summaries, this section covers:
 - ✍️ **Coding habits** — programming by coincidence, refactoring, test-driven development, naming
 - 📋 **Before the project** — requirements gathering, solving the right puzzle, working with stakeholders
 - 👥 **Pragmatic teams** — automating everything, delivering well, delighting users, team pride
+- 🎯 **Interview mastery** — 5-step problem-solving process, BUD optimization, Big O, 189 DS&A problems
+- 🗂️ **Data structures & algorithms** — arrays, trees, graphs, DP, sorting, bit manipulation, system design
+- 🏢 **Company-specific prep** — Google, Amazon, Facebook, Microsoft, Apple hiring processes
 
 ---
 
