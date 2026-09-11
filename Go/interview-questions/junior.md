@@ -289,3 +289,314 @@ fmt.Println(x) // 100
 ```
 
 Pointers are used to avoid copying large structs and to allow mutation through function parameters.
+
+---
+
+## 16. What are multiple return values and how are they used?
+
+**A:** Go functions can return multiple values — this is idiomatic, especially for returning a result + error:
+
+```go
+func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return a / b, nil
+}
+
+result, err := divide(10, 2)
+```
+
+You can also ignore a return value with the blank identifier `_`:
+```go
+result, _ := divide(10, 2) // ignore error (only when truly safe)
+```
+
+---
+
+## 17. What are named return values?
+
+**A:** You can name return values in the function signature — they act as pre-declared variables and enable a "naked return":
+
+```go
+func minMax(arr []int) (min, max int) {
+    min, max = arr[0], arr[0]
+    for _, v := range arr[1:] {
+        if v < min { min = v }
+        if v > max { max = v }
+    }
+    return // naked return — returns min and max
+}
+```
+
+**Use sparingly:** Named returns help document what values mean; naked returns in long functions hurt readability.
+
+---
+
+## 18. What is `iota` and how do you use it in const blocks?
+
+**A:** `iota` is a predeclared identifier that resets to 0 at each `const` block and increments by 1 for each spec:
+
+```go
+type Direction int
+
+const (
+    North Direction = iota // 0
+    East                   // 1
+    South                  // 2
+    West                   // 3
+)
+
+// Bit flags
+const (
+    Read    = 1 << iota // 1
+    Write               // 2
+    Execute             // 4
+)
+```
+
+---
+
+## 19. What is a type assertion and a type switch?
+
+**A:**
+
+**Type assertion** — extract the concrete type from an interface:
+```go
+var i interface{} = "hello"
+
+s, ok := i.(string) // safe assertion
+if !ok {
+    fmt.Println("not a string")
+}
+```
+
+**Type switch** — branch on the concrete type:
+```go
+func describe(i interface{}) {
+    switch v := i.(type) {
+    case int:
+        fmt.Printf("int: %d
+", v)
+    case string:
+        fmt.Printf("string: %s
+", v)
+    default:
+        fmt.Printf("unknown: %T
+", v)
+    }
+}
+```
+
+---
+
+## 20. What is the `init()` function?
+
+**A:** `init` is a special function that runs automatically before `main`, after all variable initializations:
+
+```go
+var config Config
+
+func init() {
+    config = loadConfig("config.yaml")
+}
+```
+
+- Multiple `init` functions can exist in a package (even in the same file)
+- They run in the order they appear, files alphabetically
+- Cannot be called explicitly
+- Common uses: register drivers (`database/sql`), initialize package-level state
+
+---
+
+## 21. What is the blank identifier `_`?
+
+**A:** `_` discards a value you don't need:
+
+```go
+// Ignore second return value
+val, _ := strconv.Atoi("42")
+
+// Ignore loop index
+for _, v := range slice { fmt.Println(v) }
+
+// Compile-time interface check (no runtime cost)
+var _ Animal = (*Dog)(nil) // fails to compile if Dog doesn't implement Animal
+
+// Import for side effects only
+import _ "github.com/lib/pq" // registers postgres driver
+```
+
+---
+
+## 22. How do you convert between strings, `[]byte`, and `[]rune`?
+
+**A:**
+```go
+s := "hello, 世界"
+
+// string → []byte (raw UTF-8 bytes)
+b := []byte(s)
+
+// []byte → string
+s2 := string(b)
+
+// string → []rune (Unicode code points)
+r := []rune(s)
+fmt.Println(len(s))  // 13 (bytes)
+fmt.Println(len(r))  // 9 (runes/characters)
+
+// Iterate characters correctly
+for i, ch := range s {
+    fmt.Printf("%d: %c
+", i, ch) // ch is a rune
+}
+```
+
+---
+
+## 23. What is `fmt.Stringer` and why implement it?
+
+**A:** `fmt.Stringer` is an interface with a single method `String() string`. Implement it to control how your type prints:
+
+```go
+type Point struct{ X, Y int }
+
+func (p Point) String() string {
+    return fmt.Sprintf("(%d, %d)", p.X, p.Y)
+}
+
+p := Point{3, 4}
+fmt.Println(p)        // (3, 4)
+fmt.Printf("%v
+", p) // (3, 4)
+```
+
+---
+
+## 24. How does error wrapping work with `fmt.Errorf` and `%w`?
+
+**A:** `%w` wraps an error, preserving the original for inspection with `errors.Is` and `errors.As`:
+
+```go
+func openConfig(path string) error {
+    _, err := os.Open(path)
+    if err != nil {
+        return fmt.Errorf("openConfig: %w", err) // wrap with context
+    }
+    return nil
+}
+
+err := openConfig("missing.yaml")
+errors.Is(err, os.ErrNotExist) // true — unwraps chain
+```
+
+---
+
+## 25. What is the `any` type?
+
+**A:** `any` is an alias for `interface{}` introduced in Go 1.18 — use it for values of unknown type:
+
+```go
+var v any = 42
+v = "now a string"
+v = []int{1, 2, 3}
+
+// You need a type assertion to use the underlying value
+if s, ok := v.(string); ok {
+    fmt.Println(s)
+}
+```
+
+Avoid overusing `any` — it bypasses type safety. Prefer generics or concrete types where possible.
+
+---
+
+## 26. What is the difference between `make` for slices with length vs capacity?
+
+**A:**
+```go
+s1 := make([]int, 5)     // len=5, cap=5 — 5 zero elements
+s2 := make([]int, 0, 5)  // len=0, cap=5 — empty, preallocated
+
+// s1 already has 5 elements
+fmt.Println(s1) // [0 0 0 0 0]
+
+// s2 is empty but won't reallocate until 6th append
+s2 = append(s2, 1, 2, 3) // len=3, cap=5 — no reallocation
+```
+
+Preallocate with known capacity to avoid repeated backing-array copies during appending.
+
+---
+
+## 27. What happens when you pass a slice to a function?
+
+**A:** The slice header (pointer, len, cap) is copied, but the underlying array is shared:
+
+```go
+func double(s []int) {
+    for i := range s {
+        s[i] *= 2 // modifies original array
+    }
+}
+
+nums := []int{1, 2, 3}
+double(nums)
+fmt.Println(nums) // [2 4 6] — mutated!
+```
+
+But `append` inside a function doesn't affect the caller's slice if it causes reallocation:
+```go
+func addItem(s []int) []int {
+    return append(s, 99) // may or may not affect original — always return
+}
+```
+
+---
+
+## 28. What is a variadic function and how do you pass a slice to one?
+
+**A:**
+```go
+func sum(nums ...int) int {
+    total := 0
+    for _, n := range nums { total += n }
+    return total
+}
+
+sum(1, 2, 3)           // pass individual values
+s := []int{1, 2, 3}
+sum(s...)              // unpack slice with ...
+```
+
+---
+
+## 29. What is short-circuit evaluation in Go?
+
+**A:** `&&` and `||` short-circuit — the right operand is only evaluated if necessary:
+
+```go
+if user != nil && user.IsActive() { // IsActive only called if user != nil
+    // safe
+}
+
+if cached || expensiveLookup() { // expensiveLookup skipped if cached is true
+    // ...
+}
+```
+
+---
+
+## 30. How do you format and lint Go code?
+
+**A:**
+```bash
+gofmt -w .           # format code (built-in)
+goimports -w .       # format + organize imports
+go vet ./...         # report suspicious constructs
+staticcheck ./...    # advanced static analysis
+golangci-lint run    # meta-linter (runs many linters at once)
+```
+
+`gofmt` is non-negotiable — the entire Go community uses it. CI pipelines typically reject unformatted code.

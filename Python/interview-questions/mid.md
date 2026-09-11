@@ -418,3 +418,428 @@ posts = Post.objects.prefetch_related("tags").all()
 ```
 
 Always use `select_related`/`prefetch_related` when accessing related objects in a loop to avoid the N+1 query problem.
+
+---
+
+## 16. What is `functools.wraps` and why is it important?
+
+**A:** Without `@functools.wraps`, a decorator replaces the wrapped function's metadata (`__name__`, `__doc__`, etc.):
+
+```python
+import functools
+
+def my_decorator(func):
+    @functools.wraps(func)  # preserves original metadata
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@my_decorator
+def greet(name):
+    """Greet someone."""
+    return f"Hello, {name}"
+
+print(greet.__name__)  # "greet" (not "wrapper")
+print(greet.__doc__)   # "Greet someone."
+```
+
+Especially important when using multiple decorators or tools that inspect function metadata (pytest, Sphinx, FastAPI).
+
+---
+
+## 17. What is `__enter__` and `__exit__` — how do context managers suppress exceptions?
+
+**A:**
+```python
+class SuppressError:
+    def __init__(self, *exc_types):
+        self.exc_types = exc_types
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type and issubclass(exc_type, self.exc_types):
+            return True  # True = suppress the exception
+        return False     # False = let it propagate
+
+with SuppressError(ValueError):
+    int("bad")  # ValueError is swallowed
+print("continues here")
+```
+
+`contextlib.suppress` does exactly this in the standard library.
+
+---
+
+## 18. What is `asyncio.gather` vs `asyncio.wait`?
+
+**A:**
+```python
+# gather — run coroutines concurrently, return results in ORDER
+results = await asyncio.gather(
+    fetch(url1),
+    fetch(url2),
+    fetch(url3),
+    return_exceptions=True  # exceptions returned, not raised
+)
+
+# wait — more control: returns sets of done/pending tasks
+tasks = [asyncio.create_task(fetch(u)) for u in urls]
+done, pending = await asyncio.wait(tasks, timeout=5.0)
+for task in pending:
+    task.cancel()
+```
+
+Use `gather` for the common case. Use `wait` when you need `FIRST_COMPLETED`, `FIRST_EXCEPTION`, or fine-grained timeout handling.
+
+---
+
+## 19. What is `__repr__` vs `__str__`?
+
+**A:**
+- `__str__` — human-readable, called by `str()` and `print()`
+- `__repr__` — unambiguous, developer-facing, called by `repr()` and in the REPL; should ideally be eval-able
+
+```python
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __repr__(self):
+        return f"Point({self.x!r}, {self.y!r})"  # Point(1, 2)
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"             # (1, 2)
+
+p = Point(1, 2)
+repr(p)  # "Point(1, 2)"
+str(p)   # "(1, 2)"
+print(p) # "(1, 2)" — uses __str__
+```
+
+If you only implement one, implement `__repr__` — it serves as a fallback for `__str__`.
+
+---
+
+## 20. How does Django's middleware stack work?
+
+**A:** Middleware is a chain of hooks applied to every request/response:
+
+```python
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "myapp.middleware.TimingMiddleware",
+    ...
+]
+```
+
+**Order matters:** Request flows top → bottom, response flows bottom → top.
+
+```
+Request  → SecurityMiddleware → SessionMiddleware → TimingMiddleware → View
+Response ← SecurityMiddleware ← SessionMiddleware ← TimingMiddleware ← View
+```
+
+```python
+class TimingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Code here runs before the view
+        response = self.get_response(request)
+        # Code here runs after the view
+        return response
+```
+
+---
+
+## 21. What is `@cached_property`?
+
+**A:** `cached_property` computes a property once and caches the result on the instance:
+
+```python
+from functools import cached_property
+
+class DataSet:
+    def __init__(self, data):
+        self.data = data
+
+    @cached_property
+    def median(self):
+        print("computing...")
+        return sorted(self.data)[len(self.data) // 2]
+
+ds = DataSet([5, 1, 3, 2, 4])
+ds.median  # "computing..." → 3
+ds.median  # 3 (no recomputation)
+```
+
+Cached in `instance.__dict__` — setting the attribute invalidates the cache.
+
+---
+
+## 22. What are `typing.Protocol` and structural subtyping?
+
+**A:** `Protocol` enables structural typing (duck typing + static analysis) without inheritance:
+
+```python
+from typing import Protocol
+
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+class Circle:
+    def draw(self) -> None:
+        print("Drawing circle")
+
+class Square:
+    def draw(self) -> None:
+        print("Drawing square")
+
+def render(shape: Drawable) -> None:
+    shape.draw()
+
+render(Circle())  # OK — Circle satisfies Drawable structurally
+render(Square())  # OK — no inheritance needed
+```
+
+`mypy` enforces this at type-check time. Similar to Go's implicit interfaces.
+
+---
+
+## 23. What is `itertools` and what are its most useful functions?
+
+**A:**
+```python
+import itertools
+
+# chain — flatten multiple iterables
+list(itertools.chain([1,2], [3,4], [5])) # [1,2,3,4,5]
+
+# product — cartesian product
+list(itertools.product([1,2], ["a","b"])) # [(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+
+# groupby — group consecutive items (sort first!)
+data = sorted([("a",1),("b",2),("a",3)], key=lambda x: x[0])
+for key, group in itertools.groupby(data, key=lambda x: x[0]):
+    print(key, list(group))
+
+# islice — lazy slice of iterator
+first_10 = list(itertools.islice(infinite_gen(), 10))
+
+# batched (Python 3.12+)
+list(itertools.batched([1,2,3,4,5], 2)) # [(1,2),(3,4),(5,)]
+```
+
+---
+
+## 24. How do you implement retry logic in Python?
+
+**A:**
+```python
+import time
+import functools
+
+def retry(times=3, delay=1.0, backoff=2.0, exceptions=(Exception,)):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            wait = delay
+            for attempt in range(times):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    if attempt == times - 1:
+                        raise
+                    time.sleep(wait)
+                    wait *= backoff
+        return wrapper
+    return decorator
+
+@retry(times=5, delay=0.5, exceptions=(ConnectionError, TimeoutError))
+def call_external_api():
+    ...
+```
+
+Or use `tenacity` library for production-grade retry with jitter.
+
+---
+
+## 25. What is `abc.ABC` and abstract base classes?
+
+**A:**
+```python
+from abc import ABC, abstractmethod
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self) -> float: ...
+
+    @abstractmethod
+    def perimeter(self) -> float: ...
+
+    def describe(self):  # concrete method shared by all
+        return f"Area: {self.area():.2f}"
+
+class Circle(Shape):
+    def __init__(self, radius: float):
+        self.radius = radius
+
+    def area(self) -> float:
+        return 3.14159 * self.radius ** 2
+
+    def perimeter(self) -> float:
+        return 2 * 3.14159 * self.radius
+
+# Shape() — TypeError: Can't instantiate abstract class
+c = Circle(5)  # OK
+```
+
+---
+
+## 26. What is `Pydantic` and why is it used?
+
+**A:** Pydantic provides runtime data validation using Python type annotations:
+
+```python
+from pydantic import BaseModel, validator, EmailStr
+from datetime import datetime
+
+class UserCreate(BaseModel):
+    name: str
+    email: EmailStr
+    age: int
+    created_at: datetime = datetime.utcnow()
+
+    @validator("age")
+    def age_must_be_positive(cls, v):
+        if v < 0:
+            raise ValueError("age must be positive")
+        return v
+
+# Automatic parsing + validation
+user = UserCreate(name="Alice", email="alice@example.com", age=30)
+
+# Invalid data raises ValidationError with field-level details
+try:
+    UserCreate(name="Bob", email="not-an-email", age=-5)
+except ValueError as e:
+    print(e)
+```
+
+Backbone of FastAPI. Also used for config management, ETL validation, and CLI tools.
+
+---
+
+## 27. What is Django's `select_for_update`?
+
+**A:** `select_for_update()` adds `SELECT ... FOR UPDATE` — a pessimistic row lock preventing concurrent modifications:
+
+```python
+from django.db import transaction
+
+@transaction.atomic
+def transfer(from_id, to_id, amount):
+    # Lock both rows for the duration of the transaction
+    accounts = Account.objects.select_for_update().filter(id__in=[from_id, to_id])
+    from_acc = next(a for a in accounts if a.id == from_id)
+    to_acc   = next(a for a in accounts if a.id == to_id)
+
+    if from_acc.balance < amount:
+        raise ValueError("Insufficient funds")
+
+    from_acc.balance -= amount
+    to_acc.balance += amount
+    Account.objects.bulk_update([from_acc, to_acc], ["balance"])
+```
+
+Without this, two concurrent transfers could read the same balance and cause a race condition.
+
+---
+
+## 28. What is `__init_subclass__` and when is it useful?
+
+**A:** Called on a base class whenever it is subclassed — useful for registering subclasses without a metaclass:
+
+```python
+class Plugin:
+    _registry = {}
+
+    def __init_subclass__(cls, plugin_name: str = None, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if plugin_name:
+            Plugin._registry[plugin_name] = cls
+
+class JSONPlugin(Plugin, plugin_name="json"):
+    def process(self, data): ...
+
+class CSVPlugin(Plugin, plugin_name="csv"):
+    def process(self, data): ...
+
+Plugin._registry["json"]  # JSONPlugin
+```
+
+Cleaner than metaclasses for simple registration patterns.
+
+---
+
+## 29. What is `dataclasses.field` and `__post_init__`?
+
+**A:**
+```python
+from dataclasses import dataclass, field
+
+@dataclass
+class Order:
+    customer_id: str
+    items: list = field(default_factory=list)  # mutable default — MUST use field()
+    total: float = field(init=False)            # excluded from __init__
+    _internal: str = field(default="x", repr=False, compare=False)
+
+    def __post_init__(self):
+        # Runs after __init__ — for derived fields and validation
+        self.total = sum(item.price for item in self.items)
+        if not self.customer_id:
+            raise ValueError("customer_id required")
+```
+
+---
+
+## 30. How does `logging` configuration work in production Python apps?
+
+**A:**
+```python
+import logging.config
+
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s %(name)s %(levelname)s %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django.db.backends": {"level": "WARNING"},  # suppress SQL logs
+        "myapp": {"level": "DEBUG"},
+    }
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger(__name__)
+logger.info("App started", extra={"version": "1.2.3"})
+```

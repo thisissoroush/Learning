@@ -288,3 +288,334 @@ f._internal  # Works, but "don't touch"
 f.__private  # AttributeError
 f._Foo__private  # Works — name mangling
 ```
+
+---
+
+## 16. What is the difference between `deepcopy` and `copy`?
+
+**A:**
+```python
+import copy
+
+original = [[1, 2], [3, 4]]
+
+shallow = copy.copy(original)       # new outer list, shared inner lists
+deep    = copy.deepcopy(original)   # fully independent copy
+
+shallow[0][0] = 99
+print(original[0][0]) # 99 — inner list shared!
+
+deep[0][0] = 99
+# original unchanged — fully independent
+```
+
+Use `deepcopy` when your data structure contains nested mutable objects.
+
+---
+
+## 17. What are `*args` unpacking and `**kwargs` unpacking at call site?
+
+**A:**
+```python
+def greet(name, greeting, punctuation):
+    return f"{greeting}, {name}{punctuation}"
+
+args = ("Alice", "Hello", "!")
+greet(*args)  # unpacks tuple as positional arguments
+
+kwargs = {"name": "Alice", "greeting": "Hi", "punctuation": "."}
+greet(**kwargs)  # unpacks dict as keyword arguments
+
+# Combine both
+greet(*("Alice",), **{"greeting": "Hey", "punctuation": "?"})
+```
+
+---
+
+## 18. How does `enumerate` work and when do you use it?
+
+**A:**
+```python
+fruits = ["apple", "banana", "cherry"]
+
+# Instead of range(len(...))
+for i, fruit in enumerate(fruits):
+    print(f"{i}: {fruit}")
+
+# With start index
+for i, fruit in enumerate(fruits, start=1):
+    print(f"{i}: {fruit}")  # 1: apple, 2: banana, 3: cherry
+```
+
+---
+
+## 19. What is `zip` and how do you use it?
+
+**A:**
+```python
+names = ["Alice", "Bob", "Charlie"]
+scores = [95, 87, 72]
+
+for name, score in zip(names, scores):
+    print(f"{name}: {score}")
+
+# zip stops at the shortest iterable
+# Use itertools.zip_longest for full coverage
+
+# Unzip with *
+pairs = [(1, "a"), (2, "b"), (3, "c")]
+numbers, letters = zip(*pairs)
+# numbers = (1, 2, 3), letters = ('a', 'b', 'c')
+```
+
+---
+
+## 20. What is `sorted` vs `.sort()`?
+
+**A:**
+- `.sort()` — in-place, modifies the list, returns `None`
+- `sorted()` — returns a new sorted iterable, works on any iterable
+
+```python
+nums = [3, 1, 4, 1, 5]
+nums.sort()                   # in-place
+nums.sort(reverse=True)       # descending
+
+sorted_nums = sorted(nums)            # new list
+sorted_strs = sorted("hello")         # works on strings too: ['e', 'h', 'l', 'l', 'o']
+
+# Custom key
+people = [{"name": "Bob", "age": 30}, {"name": "Alice", "age": 25}]
+sorted(people, key=lambda p: p["age"])  # sort by age
+```
+
+---
+
+## 21. What are `set` operations in Python?
+
+**A:**
+```python
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+a | b   # union:        {1, 2, 3, 4, 5, 6}
+a & b   # intersection: {3, 4}
+a - b   # difference:   {1, 2}
+a ^ b   # symmetric diff: {1, 2, 5, 6}
+
+# Membership test is O(1) — much faster than list
+42 in {1, 42, 99}   # True
+```
+
+---
+
+## 22. What is `defaultdict` and `Counter`?
+
+**A:**
+```python
+from collections import defaultdict, Counter
+
+# defaultdict — no KeyError, auto-creates default value
+word_lists = defaultdict(list)
+word_lists["fruits"].append("apple")   # no need to check if key exists
+
+# Counter — counts hashable objects
+text = "hello world"
+c = Counter(text.split())
+# Counter({'hello': 1, 'world': 1})
+
+c = Counter("abracadabra")
+c.most_common(2)  # [('a', 5), ('b', 2)]
+c["a"]            # 5
+c["z"]            # 0 (no KeyError)
+```
+
+---
+
+## 23. What is `global` and `nonlocal`?
+
+**A:**
+```python
+x = 10
+
+def modify_global():
+    global x
+    x = 99  # modifies the module-level x
+
+def outer():
+    count = 0
+    def inner():
+        nonlocal count  # refers to outer's count
+        count += 1
+    inner()
+    return count  # 1
+```
+
+Avoid `global` — it makes code hard to reason about. `nonlocal` is occasionally useful for closures.
+
+---
+
+## 24. What is the `in` operator and what does it check?
+
+**A:**
+```python
+# List — O(n) linear search
+3 in [1, 2, 3, 4]      # True
+
+# Set — O(1) hash lookup
+3 in {1, 2, 3, 4}      # True (prefer for membership tests)
+
+# Dict — checks keys
+"name" in {"name": "Alice"}  # True
+
+# String — substring check
+"ell" in "hello"        # True
+
+# Custom class — implement __contains__
+class MyRange:
+    def __contains__(self, item): return 0 <= item < 10
+5 in MyRange()   # True
+```
+
+---
+
+## 25. What is `isinstance` vs `type()`?
+
+**A:**
+```python
+class Animal: pass
+class Dog(Animal): pass
+
+d = Dog()
+
+type(d) == Dog      # True — exact type only
+isinstance(d, Dog)  # True
+isinstance(d, Animal)  # True — also matches parent classes
+
+# isinstance is preferred — respects inheritance
+# type() is useful when you need EXACT type check
+```
+
+---
+
+## 26. What is string slicing?
+
+**A:**
+```python
+s = "Hello, World!"
+
+s[0]       # 'H'
+s[-1]      # '!'
+s[0:5]     # 'Hello'
+s[7:]      # 'World!'
+s[:5]      # 'Hello'
+s[::2]     # every 2nd char: 'Hlo ol!'
+s[::-1]    # reversed: '!dlroW ,olleH'
+
+# Strings are immutable — slicing creates a new string
+```
+
+---
+
+## 27. What are f-string expressions and formatting options?
+
+**A:**
+```python
+import math
+
+x = 3.14159
+name = "Alice"
+
+f"{x:.2f}"          # '3.14' — 2 decimal places
+f"{x:>10.2f}"       # '      3.14' — right-aligned, width 10
+f"{1000000:,}"      # '1,000,000' — thousands separator
+f"{255:#x}"         # '0xff' — hex with prefix
+f"{name!r}"         # "'Alice'" — repr()
+f"{name!s}"         # 'Alice' — str()
+f"{2 + 2}"          # '4' — expressions
+f"{math.pi:.4f}"    # '3.1416'
+```
+
+---
+
+## 28. What is `pass`, `continue`, and `break`?
+
+**A:**
+```python
+# pass — no-op placeholder (empty block, stub)
+class EmptyClass:
+    pass
+
+def not_implemented():
+    pass
+
+# continue — skip to next iteration
+for i in range(10):
+    if i % 2 == 0:
+        continue    # skip even numbers
+    print(i)        # prints 1, 3, 5, 7, 9
+
+# break — exit loop entirely
+for i in range(10):
+    if i == 5:
+        break       # stops at 5
+    print(i)
+```
+
+---
+
+## 29. How do you open and read files in Python?
+
+**A:**
+```python
+# Read entire file
+with open("file.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# Read line by line (memory-efficient for large files)
+with open("file.txt") as f:
+    for line in f:
+        print(line.strip())
+
+# Read all lines into a list
+lines = f.readlines()
+
+# Write
+with open("out.txt", "w") as f:
+    f.write("Hello
+")
+
+# Append
+with open("out.txt", "a") as f:
+    f.write("More
+")
+```
+
+Always use `with` — ensures the file is closed even on exception.
+
+---
+
+## 30. What is `os.path` and `pathlib`?
+
+**A:**
+```python
+import os
+from pathlib import Path
+
+# os.path (older)
+os.path.join("dir", "file.txt")     # "dir/file.txt"
+os.path.exists("file.txt")
+os.path.basename("/path/to/file.txt")  # "file.txt"
+
+# pathlib (modern, preferred)
+p = Path("dir") / "file.txt"       # Path object, / operator
+p.exists()
+p.name          # "file.txt"
+p.stem          # "file"
+p.suffix        # ".txt"
+p.read_text()   # read file contents
+p.write_text("hello")
+
+for f in Path(".").glob("*.py"):    # find all .py files
+    print(f)
+```

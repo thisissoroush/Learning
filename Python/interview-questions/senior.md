@@ -473,3 +473,614 @@ class Node:
 - `division` — true division in Python 2 (historical)
 
 `from __future__ import annotations` is the only one still actively relevant in modern Python for clean generic type hints with self-references.
+
+---
+
+## 16. What is `__class_getitem__` and how does it enable generic classes?
+
+**A:** `__class_getitem__` is called when you use subscript syntax on a class (`MyClass[T]`). It enables generic-style annotations:
+
+```python
+class Stack:
+    def __class_getitem__(cls, item):
+        return type(f"Stack[{item.__name__}]", (cls,), {})
+
+    def __init__(self):
+        self._items = []
+
+    def push(self, item): self._items.append(item)
+    def pop(self): return self._items.pop()
+
+# With typing.Generic (the real approach)
+from typing import TypeVar, Generic
+
+T = TypeVar("T")
+
+class Stack(Generic[T]):
+    def __init__(self) -> None:
+        self._items: list[T] = []
+
+    def push(self, item: T) -> None:
+        self._items.append(item)
+
+    def pop(self) -> T:
+        return self._items.pop()
+
+s: Stack[int] = Stack()
+s.push(42)
+```
+
+---
+
+## 17. How do you trace memory leaks in a Python process?
+
+**A:**
+
+```python
+import tracemalloc
+
+tracemalloc.start()
+
+# ... run the code under investigation ...
+
+snapshot = tracemalloc.take_snapshot()
+top_stats = snapshot.statistics("lineno")
+for stat in top_stats[:10]:
+    print(stat)
+
+# Compare two snapshots
+snap1 = tracemalloc.take_snapshot()
+# ... more work ...
+snap2 = tracemalloc.take_snapshot()
+for stat in snap2.compare_to(snap1, "lineno")[:10]:
+    print(stat)
+```
+
+Also useful:
+- `objgraph` — find objects that aren't being collected
+- `memory_profiler` — line-by-line memory usage
+- `gc.get_referrers(obj)` — find what's holding a reference
+
+---
+
+## 18. How does CPython implement dictionaries internally?
+
+**A:** CPython's `dict` is a **hash table** with open addressing:
+
+- Each key is hashed; `hash(key) % capacity` gives the slot index
+- **Collision resolution:** Linear probing with perturbation (pseudo-random walk through slots)
+- **Load factor:** Resizes (doubles) when ~2/3 full
+- **Compact (Python 3.6+):** Indices array + separate entries array — preserves insertion order while keeping hash lookup fast
+
+```python
+# Order is guaranteed in Python 3.7+
+d = {"c": 3, "a": 1, "b": 2}
+list(d.keys())  # ["c", "a", "b"] — insertion order
+
+# Hash collisions are handled internally
+hash("key1") % 8  # might collide with hash("key2") % 8
+```
+
+Key property: average O(1) lookup, O(n) worst case (all keys hash to same slot — rare with good hash functions).
+
+---
+
+## 19. What is `__set_name__` and how does it simplify descriptors?
+
+**A:** `__set_name__` is called on a descriptor when the class body is processed — it receives the owner class and the attribute name:
+
+```python
+class TypedField:
+    def __set_name__(self, owner, name):
+        self.name = name
+        self._attr = f"_{name}"
+
+    def __get__(self, obj, objtype=None):
+        if obj is None: return self
+        return getattr(obj, self._attr, None)
+
+    def __set__(self, obj, value):
+        if not isinstance(value, self.expected_type):
+            raise TypeError(f"{self.name} must be {self.expected_type.__name__}")
+        setattr(obj, self._attr, value)
+
+class IntField(TypedField):
+    expected_type = int
+
+class Product:
+    price = IntField()    # __set_name__ called here: name="price"
+    quantity = IntField() # name="quantity"
+
+p = Product()
+p.price = 100    # OK
+p.price = "100"  # TypeError: price must be int
+```
+
+---
+
+## 20. What is `__init_subclass__` vs metaclass — when do you use each?
+
+**A:**
+
+| | `__init_subclass__` | Metaclass |
+|--|--------------------|-----------| 
+| Complexity | Simple | Complex |
+| Use case | Register subclasses, set class attributes | Control class creation, add methods, wrap all methods |
+| Python version | 3.6+ | Always |
+| Inherits | Yes, automatically | Only if metaclass is inherited |
+
+```python
+# Use __init_subclass__ for simple registration
+class Handler(ABC):
+    _handlers = {}
+    def __init_subclass__(cls, route: str = None, **kw):
+        super().__init_subclass__(**kw)
+        if route: Handler._handlers[route] = cls
+
+class HomeHandler(Handler, route="/"):
+    def handle(self, request): ...
+
+# Use metaclass when you need to transform ALL methods
+class LoggingMeta(type):
+    def __new__(mcs, name, bases, namespace):
+        for key, val in namespace.items():
+            if callable(val) and not key.startswith("_"):
+                namespace[key] = log_calls(val)
+        return super().__new__(mcs, name, bases, namespace)
+```
+
+---
+
+## 21. How do you implement connection pooling in Python without a framework?
+
+**A:**
+
+```python
+import queue
+import threading
+import psycopg2
+from contextlib import contextmanager
+
+class ConnectionPool:
+    def __init__(self, dsn: str, size: int = 10):
+        self._pool = queue.Queue(maxsize=size)
+        for _ in range(size):
+            self._pool.put(psycopg2.connect(dsn))
+
+    @contextmanager
+    def get(self, timeout: float = 5.0):
+        conn = self._pool.get(timeout=timeout)
+        try:
+            yield conn
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            self._pool.put(conn)
+
+pool = ConnectionPool("postgresql://user:pass@localhost/db", size=20)
+
+with pool.get() as conn:
+    cur = conn.cursor()
+    cur.execute("SELECT 1")
+```
+
+In production, prefer `psycopg3` (built-in pooling), `asyncpg`, or SQLAlchemy's pool.
+
+---
+
+## 22. How does `ctypes` work and when would you use it?
+
+**A:** `ctypes` calls functions in shared C libraries without writing C extension code:
+
+```python
+import ctypes
+
+# Load shared library
+libc = ctypes.CDLL("libc.so.6")
+
+# Call C function
+libc.printf(b"Hello from C: %d\n", ctypes.c_int(42))
+
+# Work with C structs
+class Point(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_double), ("y", ctypes.c_double)]
+
+p = Point(1.0, 2.0)
+print(p.x, p.y)
+
+# Load custom shared library
+mylib = ctypes.CDLL("./mylib.so")
+mylib.add.argtypes = [ctypes.c_int, ctypes.c_int]
+mylib.add.restype = ctypes.c_int
+result = mylib.add(3, 4)  # 7
+```
+
+Use for: calling OS APIs, wrapping C libraries without cgo-equivalent compilation, performance-critical low-level code.
+
+---
+
+## 23. What is `__fspath__` and the `os.PathLike` protocol?
+
+**A:** `os.PathLike` is the protocol for path-like objects — anything implementing `__fspath__` that returns a string or bytes path:
+
+```python
+import os
+from pathlib import Path
+
+class MyPath:
+    def __init__(self, path: str):
+        self._path = path
+
+    def __fspath__(self) -> str:
+        return self._path
+
+p = MyPath("/tmp/file.txt")
+os.path.exists(p)   # works — os functions accept PathLike
+open(p)             # works
+Path(p)             # works
+
+# Check compliance
+isinstance(p, os.PathLike)  # True
+os.fspath(p)                # "/tmp/file.txt"
+```
+
+---
+
+## 24. How do you implement a plugin system in Python?
+
+**A:**
+
+**Entry points (setuptools — the standard approach):**
+
+```python
+# In plugin package's pyproject.toml
+[project.entry-points."myapp.plugins"]
+csv_exporter = "myplugin.exporters:CSVExporter"
+
+# In host app
+import importlib.metadata
+
+def load_plugins(group: str) -> dict:
+    plugins = {}
+    for ep in importlib.metadata.entry_points(group=group):
+        plugins[ep.name] = ep.load()
+    return plugins
+
+exporters = load_plugins("myapp.plugins")
+# {"csv_exporter": <class CSVExporter>}
+```
+
+**Alternative: directory scan + import:**
+```python
+import importlib, pkgutil
+
+for finder, name, _ in pkgutil.iter_modules(["plugins/"]):
+    module = importlib.import_module(f"plugins.{name}")
+    # __init_subclass__ or registry pattern auto-registers on import
+```
+
+---
+
+## 25. What is `sys.settrace` and how is it used?
+
+**A:** `sys.settrace` installs a global trace function called on every line, call, and return — the foundation of debuggers, coverage tools, and profilers:
+
+```python
+import sys
+
+def tracer(frame, event, arg):
+    if event == "call":
+        print(f"Calling {frame.f_code.co_name}")
+    elif event == "line":
+        print(f"  Line {frame.f_lineno}")
+    elif event == "return":
+        print(f"  Returning {arg!r}")
+    return tracer  # must return itself to continue tracing
+
+sys.settrace(tracer)
+# ... code to trace ...
+sys.settrace(None)  # stop tracing
+```
+
+`coverage.py` uses `sys.settrace` to record which lines execute. The overhead is significant — only enable for debugging/profiling, not in production.
+
+---
+
+## 16. How does Python's `import` system support namespace packages?
+
+**A:** PEP 420 / PEP 402 / PEP 3147 introduced namespace packages — packages without `__init__.py` that can span multiple directories:
+
+```python
+# mypackage/ in /path/a/ and mypackage/ in /path/b/
+# Both can contribute to the same "mypackage" namespace
+
+# /path/a/mypackage/module_a.py
+# /path/b/mypackage/module_b.py
+
+import sys
+sys.path.extend(["/path/a", "/path/b"])
+
+from mypackage import module_a  # from /path/a/
+from mypackage import module_b  # from /path/b/
+```
+
+**Use cases:** Plugin systems where plugins install into the same namespace, distributed package development across repos.
+
+---
+
+## 17. What is `__slots__` with inheritance and what are the pitfalls?
+
+**A:**
+
+```python
+class Base:
+    __slots__ = ("x",)
+
+class Child(Base):
+    __slots__ = ("y",)  # adds y; x inherited from Base
+
+c = Child()
+c.x = 1   # OK — from Base's slots
+c.y = 2   # OK — from Child's slots
+
+# Pitfall 1: If a parent doesn't define __slots__, child gets __dict__ anyway
+class BadBase:
+    pass  # no __slots__
+
+class Child2(BadBase):
+    __slots__ = ("z",)
+# Child2 still has __dict__ from BadBase — slots benefit lost!
+
+# Pitfall 2: Multiple inheritance with overlapping slots is problematic
+# Python allows it but wastes memory (duplicate slot descriptors)
+```
+
+---
+
+## 18. How does `asyncio` integrate with thread pools for blocking code?
+
+**A:** `asyncio` is single-threaded; blocking calls in a coroutine block the whole event loop. Use `run_in_executor` to offload:
+
+```python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
+async def main():
+    loop = asyncio.get_event_loop()
+
+    # Run blocking I/O in thread pool
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        result = await loop.run_in_executor(pool, blocking_file_read, "/large/file")
+
+    # Run CPU-bound work in process pool
+    with ProcessPoolExecutor(max_workers=4) as pool:
+        result = await loop.run_in_executor(pool, cpu_heavy_computation, data)
+
+# asyncio.to_thread (Python 3.9+) — simpler for thread pool
+async def main():
+    result = await asyncio.to_thread(blocking_file_read, "/large/file")
+```
+
+---
+
+## 19. What is `__prepare__` in metaclasses?
+
+**A:** `__prepare__` returns the namespace dict used during class body execution — allows customizing the dict type:
+
+```python
+from collections import OrderedDict
+
+class OrderedMeta(type):
+    @classmethod
+    def __prepare__(mcs, name, bases, **kwargs):
+        return OrderedDict()  # class body uses an OrderedDict
+
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, dict(namespace))
+        cls._field_order = list(namespace.keys())
+        return cls
+
+class Model(metaclass=OrderedMeta):
+    name = "string"
+    age = "integer"
+    email = "string"
+
+print(Model._field_order)  # ["name", "age", "email"] — insertion order preserved
+```
+
+Used by Python's `Enum` to preserve declaration order, and by some ORMs to track field definition order.
+
+---
+
+## 20. How does Django's signal system work and what are its pitfalls?
+
+**A:**
+
+```python
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+
+@receiver(post_save, sender=User)
+def on_user_created(sender, instance, created, **kwargs):
+    if created:
+        send_welcome_email.delay(instance.id)
+
+# Custom signals
+from django.dispatch import Signal
+
+order_shipped = Signal()
+
+# Emit
+order_shipped.send(sender=Order, order=order, tracking_number="1Z...")
+
+# Listen
+def on_order_shipped(sender, order, tracking_number, **kwargs):
+    notify_customer(order.customer, tracking_number)
+
+order_shipped.connect(on_order_shipped)
+```
+
+**Pitfalls:**
+- Signals are synchronous — a slow handler blocks the request
+- Signals are not transactional — post_save fires even if the outer transaction rolls back; use `transaction.on_commit`
+- Hidden coupling — hard to trace which handlers fire for a given event
+- Hard to test in isolation
+
+**Better alternatives for complex flows:** Explicit service calls, Celery tasks, or domain events with explicit dispatch.
+
+---
+
+## 21. How does `weakref` work and when should you use it?
+
+**A:** A weak reference doesn't prevent an object from being garbage collected:
+
+```python
+import weakref
+
+class Cache:
+    def __init__(self):
+        self._cache = weakref.WeakValueDictionary()
+
+    def get(self, key):
+        return self._cache.get(key)
+
+    def set(self, key, value):
+        self._cache[key] = value  # doesn't keep value alive
+
+obj = SomeObject()
+cache = Cache()
+cache.set("key", obj)
+
+del obj  # obj can now be GC'd
+cache.get("key")  # might return None — the object was collected
+```
+
+**Use cases:**
+- Caches that shouldn't prevent GC (object doesn't need to stay alive just because it's cached)
+- Observer patterns where observers shouldn't prevent subjects from being collected
+- Circular reference breaking
+
+---
+
+## 22. What is `__missing__` in dict subclasses?
+
+**A:** Called when `__getitem__` is invoked with a key that doesn't exist — the basis for `defaultdict`:
+
+```python
+class AutoDict(dict):
+    def __missing__(self, key):
+        value = self[key] = self._factory(key)
+        return value
+
+    def _factory(self, key):
+        return f"computed_{key}"
+
+d = AutoDict()
+d["x"]  # "computed_x" — computed and cached
+d["x"]  # "computed_x" — now in dict, __missing__ not called
+
+# This is how defaultdict works:
+from collections import defaultdict
+d = defaultdict(list)
+d["key"].append(1)  # __missing__ called, list() created
+```
+
+---
+
+## 23. How do you use `memoryview` for zero-copy buffer operations?
+
+**A:** `memoryview` exposes the buffer of a bytes-like object without copying:
+
+```python
+data = bytearray(b"Hello, World!")
+
+# Slice without copy
+view = memoryview(data)
+sub = view[7:12]   # memoryview slice — no copy
+print(bytes(sub))  # b"World"
+
+# Modify in-place
+view[0:5] = b"HELLO"
+print(data)  # bytearray(b'HELLO, World!')
+
+# Use with struct for binary protocol parsing
+import struct
+header = memoryview(data)[0:4]
+magic, version = struct.unpack_from("HH", header)
+```
+
+Critical for network programming, file I/O, and binary protocol parsing where copying large buffers would be expensive.
+
+---
+
+## 24. How do you write a C extension for Python?
+
+**A:** Using the Python C API:
+
+```c
+// mymodule.c
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
+static PyObject* fast_add(PyObject* self, PyObject* args) {
+    long a, b;
+    if (!PyArg_ParseTuple(args, "ll", &a, &b))
+        return NULL;
+    return PyLong_FromLong(a + b);
+}
+
+static PyMethodDef MyMethods[] = {
+    {"fast_add", fast_add, METH_VARARGS, "Add two integers in C"},
+    {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef mymodule = {
+    PyModuleDef_HEAD_INIT, "mymodule", NULL, -1, MyMethods
+};
+
+PyMODINIT_FUNC PyInit_mymodule(void) {
+    return PyModule_Create(&mymodule);
+}
+```
+
+**Alternatives with less boilerplate:**
+- `cffi` — call C from Python without writing C extension glue
+- `Cython` — Python-like syntax compiled to C
+- `pybind11` — C++ bindings with minimal code
+- `mypyc` — compile type-annotated Python to C extension
+
+---
+
+## 25. What is `PEP 695` (Python 3.12) type parameter syntax?
+
+**A:** Python 3.12 introduced cleaner generic type syntax:
+
+```python
+# Before 3.12
+from typing import TypeVar
+T = TypeVar("T")
+def first(items: list[T]) -> T:
+    return items[0]
+
+# Python 3.12+ — type[T] inline
+def first[T](items: list[T]) -> T:
+    return items[0]
+
+# Generic class
+class Stack[T]:
+    def __init__(self) -> None:
+        self._items: list[T] = []
+
+    def push(self, item: T) -> None:
+        self._items.append(item)
+
+    def pop(self) -> T:
+        return self._items.pop()
+
+# Type alias (PEP 695)
+type Vector[T] = list[T]
+```
+
+This makes Python's generic syntax much closer to other statically-typed languages.

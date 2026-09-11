@@ -389,3 +389,216 @@ semgrep --config=auto  # pattern-based security rules
 - Pin exact versions in `requirements.txt` + `pip-compile`
 - Audit Docker base images with `trivy`
 - SBOM generation in CI: `syft`
+
+---
+
+## 11. How do you design a Python service for horizontal scaling with zero shared in-process state?
+
+**A:**
+
+**12-Factor App principles:**
+- All state in external stores (Redis, Postgres, S3) — never in Python process memory
+- Configuration via environment variables — `pydantic-settings`
+- Stateless processes — any instance can handle any request
+
+```python
+# pydantic-settings for typed config from env
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str
+    redis_url: str
+    jwt_secret: str
+    debug: bool = False
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+```
+
+**Session state:** Redis-backed sessions (Django's `django.contrib.sessions.backends.cache`)
+
+**Background jobs:** Celery workers are stateless — any worker can process any job
+
+**Deployment pattern:**
+```
+Nginx → Gunicorn (N workers, M instances) → Redis → Postgres
+                                          → S3 (files)
+                                          → Celery workers (independent pool)
+```
+
+---
+
+## 12. How do you implement a feature flag system in Python/Django?
+
+**A:**
+
+**Simple DB-backed flags:**
+```python
+from django.core.cache import cache
+
+class FeatureFlag:
+    @staticmethod
+    def is_enabled(flag: str, user=None) -> bool:
+        key = f"flag:{flag}"
+        val = cache.get(key)
+        if val is None:
+            try:
+                obj = Flag.objects.get(name=flag, active=True)
+                val = True
+            except Flag.DoesNotExist:
+                val = False
+            cache.set(key, val, timeout=60)
+        return val
+
+# Usage
+if FeatureFlag.is_enabled("new_checkout", request.user):
+    return new_checkout_view(request)
+return legacy_checkout_view(request)
+```
+
+**Production-grade:** Unleash (open-source), LaunchDarkly, or Flagsmith — support gradual rollouts, A/B testing, user targeting, kill switches.
+
+```python
+# Unleash Python SDK
+from UnleashClient import UnleashClient
+
+client = UnleashClient(url="https://unleash.mycompany.com/api", app_name="myapp")
+client.initialize_client()
+
+if client.is_enabled("new-checkout", {"userId": str(user.id)}):
+    ...
+```
+
+---
+
+## 13. How do you design a Python service for GDPR compliance?
+
+**A:**
+
+**Right to erasure (right to be forgotten):**
+```python
+def delete_user_data(user_id: int):
+    with transaction.atomic():
+        # Pseudonymize rather than hard-delete where audit trails are needed
+        user = User.objects.select_for_update().get(id=user_id)
+        user.email = f"deleted_{user.id}@deleted.invalid"
+        user.name = "Deleted User"
+        user.phone = None
+        user.is_active = False
+        user.save()
+
+        # Hard delete where no retention requirement
+        UserProfile.objects.filter(user_id=user_id).delete()
+        PersonalAddress.objects.filter(user_id=user_id).delete()
+
+        # Queue deletion from search index, analytics, data warehouse
+        purge_from_analytics.delay(user_id)
+
+        AuditLog.objects.create(
+            action="GDPR_ERASURE",
+            subject_id=user_id,
+            performed_by=request_user.id,
+            timestamp=timezone.now()
+        )
+```
+
+**Data inventory:** Map every field → lawful basis, retention period, third parties it's shared with.
+
+**Encryption at rest:** PostgreSQL column-level encryption via `pgcrypto` or application-level with `cryptography` library.
+
+---
+
+## 14. How do you architect a Python ML serving system?
+
+**A:**
+
+**Inference serving:**
+- **FastAPI** — lightweight, async-native, easy to instrument
+- **Triton Inference Server** — NVIDIA's GPU-optimized, model versioning, batching
+- **BentoML** — model packaging + serving framework
+
+```python
+# FastAPI model serving
+from fastapi import FastAPI
+import torch
+import asyncio
+from functools import lru_cache
+
+app = FastAPI()
+
+@lru_cache(maxsize=1)
+def load_model():
+    model = torch.load("model.pt")
+    model.eval()
+    return model
+
+@app.post("/predict")
+async def predict(request: PredictRequest) -> PredictResponse:
+    model = load_model()
+    features = preprocess(request.data)
+    with torch.no_grad():
+        # CPU inference is blocking — run in thread pool
+        result = await asyncio.to_thread(model, features)
+    return PredictResponse(prediction=result.item())
+```
+
+**Scaling considerations:**
+- Model loaded once per worker process (not per request)
+- GPU: one model per GPU, batching via request queue
+- Model versioning: blue/green model swap behind a feature flag
+- Monitoring: prediction latency p99, input distribution drift, output confidence distribution
+
+---
+
+## 15. How do you handle schema migrations in a Python event-sourced system?
+
+**A:**
+
+**Event versioning approach:**
+```python
+from abc import ABC, abstractmethod
+import json
+
+class EventUpcaster(ABC):
+    @property
+    @abstractmethod
+    def source_version(self) -> int: ...
+
+    @abstractmethod
+    def upcast(self, event_data: dict) -> dict: ...
+
+class OrderCreatedV1ToV2(EventUpcaster):
+    source_version = 1
+
+    def upcast(self, event_data: dict) -> dict:
+        # V1 had "customer" (string), V2 has "customer_id" (UUID)
+        return {
+            **event_data,
+            "customer_id": event_data.pop("customer"),
+            "_version": 2
+        }
+
+UPCASTERS = {
+    "OrderCreated": [OrderCreatedV1ToV2()]
+}
+
+def load_event(raw: dict) -> dict:
+    event_type = raw["type"]
+    version = raw.get("_version", 1)
+    data = raw.copy()
+
+    for upcaster in UPCASTERS.get(event_type, []):
+        if version <= upcaster.source_version:
+            data = upcaster.upcast(data)
+            version = upcaster.source_version + 1
+
+    return data
+```
+
+**Rules:**
+- Events are immutable — never modify stored events
+- Upcasters live in the application, not in the DB
+- Snapshot aggregates periodically to avoid replaying from the beginning of time
+- Test upcasters exhaustively — they're production-critical

@@ -423,3 +423,283 @@ public class ValidationBehavior<TReq, TRes> : IPipelineBehavior<TReq, TRes>
 builder.Services.AddProblemDetails();
 app.UseExceptionHandler(); // returns ProblemDetails JSON automatically
 ```
+
+---
+
+## 16. What is `System.Threading.Channels` and how does it compare to `BlockingCollection`?
+
+**A:** `System.Threading.Channels` (introduced in .NET Core 3.0) provides async producer-consumer pipelines:
+
+```csharp
+// Bounded channel — backpressure built in
+var channel = Channel.CreateBounded<Order>(new BoundedChannelOptions(100)
+{
+    FullMode = BoundedChannelFullMode.Wait,
+    SingleReader = false,
+    SingleWriter = true
+});
+
+// Producer
+await channel.Writer.WriteAsync(order, ct);
+channel.Writer.Complete();
+
+// Consumer (async foreach)
+await foreach (var order in channel.Reader.ReadAllAsync(ct))
+    await ProcessAsync(order);
+```
+
+vs `BlockingCollection<T>`:
+- `Channel<T>` is async-native — no thread blocking
+- `Channel<T>` integrates with `await foreach` and `IAsyncEnumerable<T>`
+- `BlockingCollection<T>` is older, synchronous API — avoid in async code
+
+---
+
+## 17. What is the difference between `Parallel.ForEach` and `Task.WhenAll` for parallel work?
+
+**A:**
+
+```csharp
+// Parallel.ForEach — synchronous, uses thread pool, blocks until done
+// Good for CPU-bound, in-memory work
+Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = 4 },
+    item => Process(item));
+
+// Task.WhenAll — async, doesn't block threads during I/O
+// Good for I/O-bound work (HTTP, DB)
+var tasks = items.Select(item => ProcessAsync(item));
+await Task.WhenAll(tasks);
+
+// Controlled concurrency for async
+var semaphore = new SemaphoreSlim(maxConcurrency: 4);
+var tasks2 = items.Select(async item =>
+{
+    await semaphore.WaitAsync(ct);
+    try { await ProcessAsync(item); }
+    finally { semaphore.Release(); }
+});
+await Task.WhenAll(tasks2);
+```
+
+---
+
+## 18. How does `Span<T>` avoid the overhead of LINQ on arrays?
+
+**A:** LINQ creates enumerator objects and delegates — overhead that matters on hot paths:
+
+```csharp
+int[] data = Enumerable.Range(0, 1_000_000).ToArray();
+
+// LINQ — allocates enumerator, lambda capture
+int sum1 = data.Where(n => n % 2 == 0).Sum();
+
+// Span — no allocation, direct memory access
+int sum2 = 0;
+foreach (int n in data.AsSpan())
+    if (n % 2 == 0) sum2 += n;
+
+// Even faster for specific cases — SIMD via System.Numerics.Tensors
+```
+
+BenchmarkDotNet typically shows 3-5x throughput improvement for tight loops using `Span` over LINQ.
+
+---
+
+## 19. What is `EF Core compiled queries` and when do you use them?
+
+**A:** Compiled queries cache the LINQ-to-SQL translation — avoids re-translating on every call:
+
+```csharp
+// Compiled at startup — pay the translation cost once
+private static readonly Func<AppDbContext, int, Task<User?>> GetUserQuery =
+    EF.CompileAsyncQuery((AppDbContext db, int id) =>
+        db.Users
+          .Include(u => u.Orders)
+          .FirstOrDefault(u => u.Id == id));
+
+// Use — no LINQ translation overhead on every request
+var user = await GetUserQuery(_db, userId);
+```
+
+**When to use:** High-frequency queries (per-request hot path) with fixed structure. For dynamic filters, compiled queries don't apply.
+
+---
+
+## 20. Explain `GC.TryStartNoGCRegion` and when it's useful.
+
+**A:** Temporarily suppresses GC to prevent pauses during latency-critical operations:
+
+```csharp
+const int budgetBytes = 16 * 1024 * 1024; // 16MB budget
+
+bool started = GC.TryStartNoGCRegion(budgetBytes, disallowFullBlockingGC: false);
+try
+{
+    // Latency-critical section — no GC will run here
+    // (as long as allocations stay within the budget)
+    ProcessRealTimeData();
+}
+finally
+{
+    if (started) GC.EndNoGCRegion();
+}
+```
+
+**Caveats:**
+- If allocations exceed the budget, GC runs anyway
+- Should only be used in very specific low-latency scenarios (trading systems, real-time audio)
+- Profile first — usually better to reduce allocations than suppress GC
+
+---
+
+## 21. What is `InterpolatedStringHandler` in C# 10?
+
+**A:** Allows custom types to consume interpolated strings without building the final string unless needed — eliminates string allocation for conditional logging:
+
+```csharp
+// Before C# 10 — always builds the string, even if logging is disabled
+logger.LogDebug($"Processing order {order.Id} with {items.Count} items");
+
+// With InterpolatedStringHandler — the string is only built if DEBUG logging is enabled
+// Microsoft.Extensions.Logging uses this internally since .NET 6
+
+// Custom handler example
+[InterpolatedStringHandler]
+public ref struct LogHandler
+{
+    private StringBuilder _builder;
+
+    public LogHandler(int literalLength, int formattedCount, ILogger logger, out bool shouldFormat)
+    {
+        shouldFormat = logger.IsEnabled(LogLevel.Debug);
+        _builder = shouldFormat ? new StringBuilder(literalLength) : default!;
+    }
+
+    public void AppendLiteral(string s) => _builder?.Append(s);
+    public void AppendFormatted<T>(T t) => _builder?.Append(t);
+    public string GetFormattedText() => _builder?.ToString() ?? "";
+}
+```
+
+---
+
+## 22. How does `EF Core` handle optimistic concurrency?
+
+**A:** Optimistic concurrency detects conflicting updates without locking rows:
+
+```csharp
+public class Order
+{
+    public Guid Id { get; set; }
+    public decimal Total { get; set; }
+
+    [Timestamp]  // or [ConcurrencyCheck]
+    public byte[] RowVersion { get; set; } = null!;
+}
+
+// EF generates: UPDATE Orders SET Total = @total WHERE Id = @id AND RowVersion = @rowVersion
+// If RowVersion doesn't match → 0 rows updated → throws DbUpdateConcurrencyException
+try
+{
+    await db.SaveChangesAsync();
+}
+catch (DbUpdateConcurrencyException ex)
+{
+    // Reload from DB, apply business logic to resolve conflict, retry
+    await ex.Entries.Single().ReloadAsync();
+    // ...retry
+}
+```
+
+---
+
+## 23. What is `IExceptionHandler` (ASP.NET Core 8) and how does it replace `UseExceptionHandler`?
+
+**A:**
+
+```csharp
+// ASP.NET Core 8 — implement IExceptionHandler for structured exception handling
+public class GlobalExceptionHandler : IExceptionHandler
+{
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken ct)
+    {
+        var problemDetails = new ProblemDetails
+        {
+            Status = exception switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound,
+                ValidationException => StatusCodes.Status422UnprocessableEntity,
+                _ => StatusCodes.Status500InternalServerError
+            },
+            Title = exception.Message,
+            Type = exception.GetType().Name
+        };
+
+        httpContext.Response.StatusCode = problemDetails.Status!.Value;
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, ct);
+        return true; // handled
+    }
+}
+
+// Register
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+app.UseExceptionHandler();
+```
+
+---
+
+## 24. What is `Minimal API` and how does it compare to Controllers?
+
+**A:**
+
+```csharp
+// Minimal API — less ceremony, functional style
+var app = WebApplication.Create(args);
+
+app.MapGet("/orders/{id}", async (Guid id, IOrderService svc, CancellationToken ct) =>
+{
+    var order = await svc.GetAsync(id, ct);
+    return order is null ? Results.NotFound() : Results.Ok(order);
+})
+.WithName("GetOrder")
+.WithOpenApi()
+.RequireAuthorization("OrderRead");
+
+app.Run();
+```
+
+**vs Controllers:**
+
+| | Minimal API | Controllers |
+|--|------------|------------|
+| Ceremony | Low | Higher |
+| Testability | Via `WebApplicationFactory` | Same |
+| Filters | Endpoint filters | Action filters |
+| Feature set | Catching up | Full |
+| Best for | Microservices, simple CRUD | Complex apps with filters/conventions |
+
+Both compile to the same middleware pipeline. Choose based on team preference and complexity.
+
+---
+
+## 25. What is `Keyed Services` in .NET 8 DI?
+
+**A:** Register multiple implementations of the same interface, distinguished by a key:
+
+```csharp
+// Register
+builder.Services.AddKeyedSingleton<ICache, RedisCache>("redis");
+builder.Services.AddKeyedSingleton<ICache, MemoryCache>("memory");
+
+// Resolve by key
+public class OrderService([FromKeyedServices("redis")] ICache cache) { }
+
+// Or resolve from IServiceProvider
+var redis = provider.GetRequiredKeyedService<ICache>("redis");
+```
+
+Before keyed services, the common pattern was named factory methods or a `Dictionary<string, ICache>` registered as singleton.

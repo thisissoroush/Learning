@@ -322,3 +322,342 @@ bool empty = name.IsNullOrEmpty(); // true
 ```
 
 LINQ is implemented entirely as extension methods on `IEnumerable<T>`.
+
+---
+
+## 16. What is `Task.ConfigureAwait` at the library level and how does it affect deadlocks?
+
+**A:** In older ASP.NET (full framework) or desktop apps with a `SynchronizationContext`, awaiting without `ConfigureAwait(false)` can deadlock:
+
+```csharp
+// Deadlock scenario (old ASP.NET / WinForms)
+public ActionResult Index()
+{
+    // Blocks the sync context thread waiting for the task
+    var result = GetDataAsync().Result; // DEADLOCK
+    return View(result);
+}
+
+async Task<string> GetDataAsync()
+{
+    await Task.Delay(1000); // tries to resume on the captured sync context
+    return "data";          // but the thread is blocked above — deadlock!
+}
+
+// Fix in library code
+async Task<string> GetDataAsync()
+{
+    await Task.Delay(1000).ConfigureAwait(false); // don't restore sync context
+    return "data";
+}
+```
+
+In ASP.NET Core there is no `SynchronizationContext`, so this is less of an issue — but still good practice in library code.
+
+---
+
+## 17. How does `Channel<T>` differ from classic producer-consumer with `BlockingCollection<T>`?
+
+**A:**
+
+| | `BlockingCollection<T>` | `Channel<T>` |
+|--|------------------------|-------------|
+| API | Synchronous blocking | Async-native |
+| Threading model | Thread-blocking | Task-based |
+| Backpressure | Bounded + blocks | Bounded + async wait |
+| Cancellation | Via token | Via token |
+
+```csharp
+// Channel<T> — modern async producer/consumer
+var channel = Channel.CreateBounded<int>(capacity: 100);
+
+// Producer
+await channel.Writer.WriteAsync(item, ct);
+channel.Writer.Complete(); // signals end
+
+// Consumer
+await foreach (var item in channel.Reader.ReadAllAsync(ct))
+    await ProcessAsync(item);
+```
+
+Use `Channel<T>` for async pipelines. `BlockingCollection<T>` for legacy sync code.
+
+---
+
+## 18. What is `IAsyncDisposable` and `await using`?
+
+**A:** For resources that require async cleanup (e.g., flushing a buffer, closing a network connection gracefully):
+
+```csharp
+public class AsyncResource : IAsyncDisposable
+{
+    private readonly Stream _stream;
+
+    public async ValueTask DisposeAsync()
+    {
+        await _stream.FlushAsync();
+        await _stream.DisposeAsync();
+    }
+}
+
+// Usage
+await using var resource = new AsyncResource();
+// DisposeAsync() called on exit, even on exception
+```
+
+---
+
+## 19. What is `Lazy<T>` and when is it thread-safe?
+
+**A:**
+```csharp
+// Thread-safe lazy initialization
+Lazy<ExpensiveService> lazy = new Lazy<ExpensiveService>(
+    () => new ExpensiveService(),
+    LazyThreadSafetyMode.ExecutionAndPublication); // default
+
+var svc = lazy.Value; // initialized once, thread-safe
+
+// Common DI pattern
+services.AddSingleton<IExpensiveService>(
+    sp => new Lazy<IExpensiveService>(() => sp.GetRequiredService<ExpensiveService>()).Value);
+```
+
+**Modes:**
+- `None` — no thread safety (single-threaded only)
+- `PublicationOnly` — multiple threads may call factory; first to finish wins
+- `ExecutionAndPublication` (default) — only one thread calls factory; others wait
+
+---
+
+## 20. What is `ReadOnlySpan<T>` and how does it improve string parsing?
+
+**A:** String operations like `Substring` allocate new strings. `ReadOnlySpan<char>` slices without allocation:
+
+```csharp
+string input = "2024-01-15";
+
+// Substring — allocates 3 new strings
+int year  = int.Parse(input.Substring(0, 4));
+int month = int.Parse(input.Substring(5, 2));
+int day   = int.Parse(input.Substring(8, 2));
+
+// ReadOnlySpan — zero allocation
+ReadOnlySpan<char> span = input.AsSpan();
+int year2  = int.Parse(span.Slice(0, 4));
+int month2 = int.Parse(span.Slice(5, 2));
+int day2   = int.Parse(span.Slice(8, 2));
+```
+
+This matters at scale — high-throughput parsers (HTTP headers, CSV, binary protocols) use `Span<T>` to eliminate GC pressure.
+
+---
+
+## 21. Explain `IOptions<T>`, `IOptionsSnapshot<T>`, and `IOptionsMonitor<T>`.
+
+**A:**
+
+| | `IOptions<T>` | `IOptionsSnapshot<T>` | `IOptionsMonitor<T>` |
+|--|--------------|----------------------|---------------------|
+| Lifetime | Singleton | Scoped | Singleton |
+| Hot reload | No | Per request | Yes (OnChange callback) |
+| Use in | Singletons | Controllers/services | Background services |
+
+```csharp
+// Register
+builder.Services.Configure<SmtpOptions>(config.GetSection("Smtp"));
+
+// Inject and use
+public class EmailService
+{
+    private readonly SmtpOptions _opts;
+    public EmailService(IOptionsMonitor<SmtpOptions> opts)
+    {
+        _opts = opts.CurrentValue;
+        opts.OnChange(newOpts => _opts = newOpts); // reacts to config changes
+    }
+}
+```
+
+---
+
+## 22. What is the Outbox pattern and how do you implement it in EF Core?
+
+**A:** Ensures that a DB write and a message publish are atomic — prevents lost events on crash:
+
+```csharp
+// Same transaction: business record + outbox entry
+await using var tx = await db.Database.BeginTransactionAsync(ct);
+
+db.Orders.Add(order);
+db.OutboxMessages.Add(new OutboxMessage
+{
+    Id = Guid.NewGuid(),
+    Type = nameof(OrderCreated),
+    Payload = JsonSerializer.Serialize(new OrderCreated(order.Id)),
+    CreatedAt = DateTime.UtcNow,
+    Processed = false
+});
+
+await db.SaveChangesAsync(ct);
+await tx.CommitAsync(ct);
+
+// Separate BackgroundService polls OutboxMessages and publishes to bus
+// Uses SELECT ... FOR UPDATE SKIP LOCKED to avoid duplicate processing
+```
+
+---
+
+## 23. How does `HybridCache` work in .NET 9?
+
+**A:** `HybridCache` (introduced in .NET 9 Preview) combines L1 (in-process memory) and L2 (Redis) caching with stampede protection built in:
+
+```csharp
+services.AddHybridCache();
+services.AddStackExchangeRedisCache(o => o.Configuration = "redis:6379");
+
+// Usage
+public async Task<UserDto> GetUserAsync(int id, CancellationToken ct)
+{
+    return await _cache.GetOrCreateAsync(
+        $"user:{id}",
+        async cancel => await _db.Users.FindAsync(new object[] { id }, cancel),
+        new HybridCacheEntryOptions
+        {
+            Expiration = TimeSpan.FromMinutes(5),
+            LocalCacheExpiration = TimeSpan.FromMinutes(1)
+        },
+        cancellationToken: ct);
+}
+```
+
+Stampede protection (single-flight) is built in — concurrent misses trigger only one DB call.
+
+---
+
+## 24. How do you write integration tests for ASP.NET Core with `WebApplicationFactory`?
+
+**A:**
+```csharp
+public class OrdersApiTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+
+    public OrdersApiTests(WebApplicationFactory<Program> factory)
+    {
+        _client = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureServices(services =>
+            {
+                // Replace real DB with in-memory
+                services.RemoveAll<DbContextOptions<AppDbContext>>();
+                services.AddDbContext<AppDbContext>(o => o.UseInMemoryDatabase("test"));
+            });
+        }).CreateClient();
+    }
+
+    [Fact]
+    public async Task CreateOrder_Returns201()
+    {
+        var response = await _client.PostAsJsonAsync("/orders",
+            new { CustomerId = "cust-1", Items = new[] { new { ProductId = "p1", Qty = 2 } } });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+}
+```
+
+---
+
+## 25. What are primary constructors in C# 12?
+
+**A:** C# 12 allows constructors directly in the class declaration:
+
+```csharp
+// Before C# 12
+public class OrderService
+{
+    private readonly IOrderRepository _repo;
+    private readonly ILogger<OrderService> _logger;
+
+    public OrderService(IOrderRepository repo, ILogger<OrderService> logger)
+    {
+        _repo = repo;
+        _logger = logger;
+    }
+}
+
+// C# 12 primary constructor
+public class OrderService(IOrderRepository repo, ILogger<OrderService> logger)
+{
+    public async Task<Order> GetAsync(Guid id) =>
+        await repo.FindAsync(id) ?? throw new NotFoundException(id);
+}
+```
+
+Parameters are in scope throughout the class body. Reduces boilerplate for DI-heavy services.
+
+---
+
+## 26. What is `FrozenDictionary<K,V>` and when should you use it?
+
+**A:** `FrozenDictionary<T,K>` (introduced in .NET 8) is an immutable dictionary optimized for read performance — lookup is faster than `Dictionary<K,V>` because it can use perfect hashing:
+
+```csharp
+// Build once at startup
+FrozenDictionary<string, CountryInfo> countries =
+    LoadCountries().ToFrozenDictionary(c => c.Code);
+
+// Then use throughout app lifetime — faster lookups, no lock needed
+if (countries.TryGetValue("US", out var info))
+    Console.WriteLine(info.Name);
+```
+
+Use for large, read-only lookup tables initialized at startup (country codes, product catalogs, feature flags snapshot).
+
+---
+
+## 27. How does `BenchmarkDotNet` work?
+
+**A:**
+```csharp
+[MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net80)]
+public class StringBenchmarks
+{
+    private string _input = "Hello, World!";
+
+    [Benchmark(Baseline = true)]
+    public string Substring() => _input.Substring(0, 5);
+
+    [Benchmark]
+    public ReadOnlySpan<char> AsSpan() => _input.AsSpan(0, 5);
+}
+```
+
+```bash
+dotnet run -c Release -- --filter '*StringBenchmarks*'
+```
+
+BenchmarkDotNet handles warmup, multiple iterations, statistical analysis, and memory allocation reporting. Never benchmark in `Debug` mode.
+
+---
+
+## 28. What is `record struct` vs `record class`?
+
+**A:**
+```csharp
+// record class (default) — reference type, value equality, heap-allocated
+record class Point(int X, int Y);
+
+// record struct — value type, value equality, stack-allocated
+record struct Point3D(int X, int Y, int Z);
+
+var p1 = new Point3D(1, 2, 3);
+var p2 = p1; // full copy — value type
+
+// readonly record struct — immutable value type (preferred for small data)
+readonly record struct Color(byte R, byte G, byte B);
+```
+
+Use `readonly record struct` for small, immutable value objects (coordinates, money, color) — zero heap allocation.

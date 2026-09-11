@@ -327,3 +327,344 @@ type Writer interface {
 ```
 
 They make code composable — any type satisfying `io.Reader` works with `io.Copy`, `bufio.Scanner`, `json.Decoder`, HTTP bodies, files, gzip, etc. This is Go's version of Unix pipes at the code level.
+
+---
+
+## 16. What is `context.WithValue` and what are its pitfalls?
+
+**A:** `context.WithValue` stores a key-value pair in the context, accessible downstream:
+
+```go
+type ctxKey string
+const TraceIDKey ctxKey = "trace_id"
+
+ctx := context.WithValue(r.Context(), TraceIDKey, "abc-123")
+traceID := ctx.Value(TraceIDKey).(string)
+```
+
+**Pitfalls:**
+- Never use built-in types (string, int) as keys — causes collisions across packages. Always use a package-private type.
+- Values in context are untyped — requires assertion; panics if wrong type
+- Not a replacement for function parameters — only for request-scoped metadata (trace IDs, auth info)
+
+---
+
+## 17. How do you implement the pipeline pattern in Go?
+
+**A:** A pipeline is a series of stages connected by channels:
+
+```go
+func generate(nums ...int) <-chan int {
+    out := make(chan int)
+    go func() {
+        defer close(out)
+        for _, n := range nums { out <- n }
+    }()
+    return out
+}
+
+func square(in <-chan int) <-chan int {
+    out := make(chan int)
+    go func() {
+        defer close(out)
+        for n := range in { out <- n * n }
+    }()
+    return out
+}
+
+// Usage
+for n := range square(generate(2, 3, 4)) {
+    fmt.Println(n) // 4, 9, 16
+}
+```
+
+---
+
+## 18. What is `errgroup` and how does it improve on `WaitGroup`?
+
+**A:** `golang.org/x/sync/errgroup` runs goroutines concurrently and returns the first error:
+
+```go
+g, ctx := errgroup.WithContext(context.Background())
+
+g.Go(func() error {
+    return fetchUser(ctx, userID)
+})
+g.Go(func() error {
+    return fetchOrders(ctx, userID)
+})
+
+if err := g.Wait(); err != nil {
+    log.Fatal(err) // first non-nil error from any goroutine
+}
+```
+
+Cleaner than `sync.WaitGroup` when you need to propagate errors from goroutines.
+
+---
+
+## 19. What is the `once` pattern with `sync.Once`?
+
+**A:** `sync.Once` ensures a function runs exactly once, regardless of how many goroutines call it — the canonical singleton/lazy init pattern:
+
+```go
+var (
+    instance *DB
+    once     sync.Once
+)
+
+func GetDB() *DB {
+    once.Do(func() {
+        instance = connectToDB()
+    })
+    return instance
+}
+```
+
+Safe for concurrent use. The `Do` function blocks all callers until the first call completes.
+
+---
+
+## 20. Explain Go's interface nil gotcha.
+
+**A:** An interface has two components: `(type, value)`. An interface is only `nil` when both are nil:
+
+```go
+var p *MyError = nil    // typed nil pointer
+var err error = p       // err has (type=*MyError, value=nil)
+
+fmt.Println(err == nil) // false! — type is set
+
+// Fix: always return untyped nil for interfaces
+func doSomething() error {
+    var p *MyError = nil
+    if somethingFailed {
+        return p // BUG
+    }
+    return nil  // correct
+}
+```
+
+---
+
+## 21. What is `atomic` package and when do you use it?
+
+**A:** `sync/atomic` provides lock-free atomic operations on integer and pointer types:
+
+```go
+var counter int64
+
+// Safe concurrent increment
+atomic.AddInt64(&counter, 1)
+
+// Load/Store — atomic read/write of 64-bit values
+val := atomic.LoadInt64(&counter)
+atomic.StoreInt64(&counter, 0)
+
+// Compare-and-swap
+swapped := atomic.CompareAndSwapInt64(&counter, old, new)
+```
+
+Use for simple counters, flags, and lock-free state. For complex state transitions, use `sync.Mutex`.
+
+---
+
+## 22. How do you handle timeouts in Go?
+
+**A:** Three approaches:
+
+```go
+// 1. context.WithTimeout (preferred — composes with cancellation)
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+defer cancel()
+result, err := fetchData(ctx)
+
+// 2. time.After in select
+select {
+case result := <-ch:
+    process(result)
+case <-time.After(5 * time.Second):
+    return errors.New("timeout")
+}
+
+// 3. time.AfterFunc — callback after duration
+timer := time.AfterFunc(5*time.Second, func() {
+    cancel()
+})
+defer timer.Stop()
+```
+
+---
+
+## 23. What is the `http.Handler` interface and how do you build middleware?
+
+**A:**
+```go
+type Handler interface {
+    ServeHTTP(ResponseWriter, *Request)
+}
+
+// Middleware wraps a handler
+func Logger(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        next.ServeHTTP(w, r)
+        log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+    })
+}
+
+// Chain middleware
+mux := http.NewServeMux()
+mux.HandleFunc("/", homeHandler)
+http.ListenAndServe(":8080", Logger(mux))
+```
+
+---
+
+## 24. How do you decode JSON in Go safely?
+
+**A:**
+```go
+type User struct {
+    Name  string `json:"name"`
+    Email string `json:"email"`
+    Age   int    `json:"age,omitempty"`
+}
+
+// Decode from HTTP body (streaming, no full-load)
+var u User
+dec := json.NewDecoder(r.Body)
+dec.DisallowUnknownFields() // strict mode
+if err := dec.Decode(&u); err != nil {
+    http.Error(w, "bad request", 400)
+    return
+}
+
+// Marshal
+data, err := json.Marshal(u)
+
+// Pretty print
+data, err = json.MarshalIndent(u, "", "  ")
+```
+
+---
+
+## 25. What is `go generate` and when do you use it?
+
+**A:** `go generate` runs arbitrary commands before building — typically for code generation:
+
+```go
+//go:generate mockgen -source=service.go -destination=mock_service.go
+//go:generate stringer -type=Status
+```
+
+```bash
+go generate ./...
+```
+
+Common uses: mock generation (`mockgen`), generating `String()` methods for enums (`stringer`), embedding static assets, protobuf compilation. The `//go:generate` directive is just a comment that `go generate` reads and executes.
+
+---
+
+## 26. What is the difference between `os.Exit` and `panic`?
+
+**A:**
+- `os.Exit(code)` — terminates immediately; deferred functions do NOT run; used for clean CLI exit codes
+- `panic` — unwinds the stack, runs deferred functions, prints stack trace; can be recovered with `recover()`
+
+```go
+// Use panic for unrecoverable programmer errors
+if len(os.Args) < 2 {
+    panic("expected at least one argument") // developer error
+}
+
+// Use os.Exit for intentional program termination
+if err := run(); err != nil {
+    fmt.Fprintln(os.Stderr, err)
+    os.Exit(1)
+}
+```
+
+---
+
+## 27. What are Go build tags?
+
+**A:** Build tags control which files are included in a build:
+
+```go
+//go:build linux
+// +build linux  (old syntax, still needed for Go < 1.17)
+
+package mypackage
+```
+
+```bash
+go build -tags integration ./...
+go test -tags integration ./...
+```
+
+Common uses:
+- Platform-specific code (`linux`, `darwin`, `windows`)
+- Integration test files (`//go:build integration`)
+- Feature flags during development
+
+---
+
+## 28. What is `os.ReadFile` vs `bufio.Scanner` for reading files?
+
+**A:**
+```go
+// os.ReadFile — reads entire file into memory (fine for small files)
+data, err := os.ReadFile("config.yaml")
+
+// bufio.Scanner — line-by-line, memory-efficient for large files
+f, err := os.Open("large.log")
+defer f.Close()
+
+scanner := bufio.NewScanner(f)
+for scanner.Scan() {
+    line := scanner.Text() // no newline
+    process(line)
+}
+if err := scanner.Err(); err != nil {
+    log.Fatal(err)
+}
+```
+
+---
+
+## 29. How do you implement a simple rate limiter in Go?
+
+**A:** Using `time.Ticker` (fixed rate) or `golang.org/x/time/rate` (token bucket):
+
+```go
+// Simple token bucket
+import "golang.org/x/time/rate"
+
+limiter := rate.NewLimiter(rate.Limit(100), 10) // 100 req/s, burst of 10
+
+func handleRequest(ctx context.Context) error {
+    if err := limiter.Wait(ctx); err != nil {
+        return err // context cancelled
+    }
+    return doWork()
+}
+```
+
+---
+
+## 30. What is `go vet` and what does it catch?
+
+**A:** `go vet` is the built-in static analyzer — catches bugs that are syntactically valid but logically wrong:
+
+- Incorrect `Printf` format strings: `fmt.Printf("%d", "string")`
+- Unreachable code after `return`
+- Passing non-pointer to `Unmarshal`
+- Misuse of `sync.Mutex` (copying a mutex)
+- Unused results from functions that must be checked (e.g., `exec.Command`)
+
+```bash
+go vet ./...
+```
+
+Run it in CI — it catches real bugs. Complement with `staticcheck` for even more analysis.

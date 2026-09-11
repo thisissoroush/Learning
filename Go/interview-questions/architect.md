@@ -303,3 +303,175 @@ v1.HandleFunc("/users", v1Handler.ListUsers)
 v2 := r.PathPrefix("/v2").Subrouter()
 v2.HandleFunc("/users", v2Handler.ListUsers)
 ```
+
+---
+
+## 11. How do you design a multi-region active-active Go service?
+
+**A:**
+
+**Data layer:**
+- **CRDTs** (Conflict-free Replicated Data Types) for eventually consistent counters, sets, and maps — no conflicts, merge automatically
+- **Global database:** CockroachDB (distributed SQL), Google Spanner, or PlanetScale for multi-region Postgres
+- **Last-write-wins with vector clocks** for simple key-value state
+
+**Traffic routing:**
+- GeoDNS or anycast (Cloudflare) → nearest region
+- Active health checks; automatic failover via DNS TTL or BGP
+
+**Consistency trade-offs:**
+- Strong consistency across regions is expensive (cross-region latency for every write)
+- Prefer eventual consistency with conflict resolution at the application level
+- Use region-local writes + async replication where possible
+
+**Go specifics:**
+- gRPC with regional endpoints; `grpc.WithDefaultServiceConfig` for load balancing policy
+- Each region is a full deployment; no single point of failure
+- Background cross-region sync goroutines with exponential backoff
+
+---
+
+## 12. How do you manage schema evolution in a Go event-sourced system?
+
+**A:**
+
+**Versioned events:**
+```go
+type EventEnvelope struct {
+    EventType string          `json:"type"`
+    Version   int             `json:"version"`
+    Payload   json.RawMessage `json:"payload"`
+}
+
+// Upcaster — transforms old events to new format
+type Upcaster interface {
+    Version() int
+    Upcast(raw json.RawMessage) (json.RawMessage, error)
+}
+
+func replayEvents(events []EventEnvelope) (Aggregate, error) {
+    agg := NewAggregate()
+    for _, e := range events {
+        payload := e.Payload
+        // Apply upcasters in chain until current version
+        for _, uc := range upcasters[e.EventType] {
+            if e.Version < uc.Version() {
+                payload, _ = uc.Upcast(payload)
+            }
+        }
+        agg.Apply(e.EventType, payload)
+    }
+    return agg, nil
+}
+```
+
+**Rules:**
+- Never delete event types or fields — only add new ones
+- Use upcasters to transform old events to current schema on read
+- Snapshot current aggregate state periodically to limit replay cost
+
+---
+
+## 13. How do you implement a distributed lock in Go?
+
+**A:** Using Redis (via `go-redis` + Redlock algorithm) or etcd:
+
+**Redis Redlock:**
+```go
+import "github.com/go-redsync/redsync/v4"
+
+rs := redsync.New(pool)
+mutex := rs.NewMutex("resource-lock",
+    redsync.WithExpiry(10*time.Second),
+    redsync.WithTries(3),
+)
+
+if err := mutex.LockContext(ctx); err != nil {
+    return err // couldn't acquire lock
+}
+defer mutex.UnlockContext(ctx)
+
+// Critical section
+```
+
+**etcd (stronger consistency):**
+```go
+session, _ := concurrency.NewSession(etcdClient)
+mutex := concurrency.NewMutex(session, "/locks/resource")
+mutex.Lock(ctx)
+defer mutex.Unlock(ctx)
+```
+
+**Caveats:**
+- Distributed locks are not perfectly reliable — always design for idempotency so duplicate executions are safe
+- etcd is CP; Redis Redlock is not strictly safe under all failure scenarios (Martin Kleppmann's critique)
+- Always set TTL to prevent lock starvation on crash
+
+---
+
+## 14. How would you approach a large-scale Go monolith decomposition into microservices?
+
+**A:**
+
+**1. Identify seams (Domain-Driven Design):**
+- Map bounded contexts — areas of the codebase that evolve independently
+- Look for internal package boundaries that map to business capabilities
+- Start with the most painful or independently deployable parts
+
+**2. Strangler Fig pattern:**
+```
+[Monolith] ← [Proxy/Router] ← [Clients]
+               ↓ route /orders/* to new service
+[OrderService]
+```
+- New service runs alongside monolith
+- Router (YARP, Nginx, custom Go proxy) routes traffic to new service
+- Once stable, remove the monolith's code path
+
+**3. Data decoupling:**
+- Move to database-per-service gradually: use shared DB → service owns a schema → separate DB
+- Use the anti-corruption layer: new service exposes an API; monolith calls it instead of direct DB access
+
+**4. Go-specific:**
+- Break internal packages into separate modules (`go.work` for local multi-module development)
+- Define gRPC contracts early — generates both server and client
+- Feature flags to roll traffic gradually
+
+---
+
+## 15. How do you enforce architecture rules in a large Go codebase?
+
+**A:**
+
+**Package dependency rules:**
+- `domain/` — no imports from `infrastructure/`, `handler/`
+- `handler/` — imports `service/` (interface only), never `repository/`
+
+**Tools:**
+
+1. **`golang.org/x/tools/analysis`** — write custom `go vet` analyzers:
+```go
+// Custom analyzer: domain packages must not import infrastructure
+var Analyzer = &analysis.Analyzer{
+    Name: "nodepcheck",
+    Run:  run,
+}
+func run(pass *analysis.Pass) (interface{}, error) {
+    if strings.Contains(pass.Pkg.Path(), "domain") {
+        for _, imp := range pass.Pkg.Imports() {
+            if strings.Contains(imp.Path(), "infrastructure") {
+                pass.Reportf(token.NoPos, "domain must not import infrastructure")
+            }
+        }
+    }
+    return nil, nil
+}
+```
+
+2. **`depguard` linter** — rule-based import restrictions in `.golangci.yml`
+
+3. **`pkgdep`** or **`godepgraph`** — visualize import graphs, spot cycles
+
+4. **CI gate** — `golangci-lint run` fails the build on violations
+
+5. **ADRs (Architecture Decision Records)** — document why rules exist so developers don't accidentally remove them

@@ -315,3 +315,206 @@ Assert.True(result.IsSuccessful);
 - Strangler Fig — incrementally replace legacy with new behind a facade
 - Branch by abstraction — swap implementations behind an interface
 - Parallel run — run old + new simultaneously, compare outputs
+
+---
+
+## 11. How do you design a high-availability .NET service on Kubernetes?
+
+**A:**
+
+**Application-level:**
+```csharp
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("db", failureStatus: HealthStatus.Degraded)
+    .AddRedis(redisConn, "redis")
+    .AddCheck("self", () => HealthCheckResult.Healthy());
+
+app.MapHealthChecks("/healthz", new() { Predicate = _ => false }); // liveness
+app.MapHealthChecks("/readyz");                                     // readiness
+```
+
+**Kubernetes:**
+```yaml
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0     # never take a pod down before replacement is ready
+      maxSurge: 1
+  template:
+    spec:
+      containers:
+        livenessProbe:
+          httpGet: { path: /healthz, port: 8080 }
+          initialDelaySeconds: 10
+        readinessProbe:
+          httpGet: { path: /readyz, port: 8080 }
+          initialDelaySeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sleep", "10"]  # drain connections before SIGTERM
+```
+
+**PodDisruptionBudget:**
+```yaml
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels: { app: order-service }
+```
+
+---
+
+## 12. How do you implement the Saga pattern in .NET with MassTransit?
+
+**A:**
+
+```csharp
+// State machine saga with MassTransit
+public class OrderSaga : MassTransitStateMachine<OrderSagaData>
+{
+    public State AwaitingPayment { get; private set; } = null!;
+    public State AwaitingShipment { get; private set; } = null!;
+    public State Completed { get; private set; } = null!;
+
+    public OrderSaga()
+    {
+        InstanceState(x => x.CurrentState);
+
+        Event(() => OrderCreated, x => x.CorrelateById(ctx => ctx.Message.OrderId));
+        Event(() => PaymentConfirmed, x => x.CorrelateById(ctx => ctx.Message.OrderId));
+        Event(() => PaymentFailed, x => x.CorrelateById(ctx => ctx.Message.OrderId));
+
+        Initially(
+            When(OrderCreated)
+                .PublishAsync(ctx => ctx.Init<ReserveInventory>(new { ctx.Message.OrderId }))
+                .TransitionTo(AwaitingPayment));
+
+        During(AwaitingPayment,
+            When(PaymentConfirmed)
+                .PublishAsync(ctx => ctx.Init<ShipOrder>(new { ctx.Message.OrderId }))
+                .TransitionTo(AwaitingShipment),
+            When(PaymentFailed)
+                .PublishAsync(ctx => ctx.Init<ReleaseInventory>(new { ctx.Message.OrderId }))
+                .Finalize());
+    }
+}
+```
+
+---
+
+## 13. How do you implement eventual consistency with the Outbox + Inbox pattern?
+
+**A:**
+
+**Outbox (producer side):** Atomically write domain event + business data in same transaction.
+
+**Inbox (consumer side):** Deduplicate received messages by tracking processed message IDs:
+
+```csharp
+// Consumer with inbox deduplication
+public async Task Consume(ConsumeContext<OrderCreated> ctx)
+{
+    var messageId = ctx.MessageId ?? throw new InvalidOperationException();
+
+    await using var tx = await _db.BeginTransactionAsync();
+
+    // Check if already processed (idempotency)
+    if (await _db.InboxMessages.AnyAsync(m => m.Id == messageId))
+    {
+        await tx.RollbackAsync();
+        return; // duplicate — skip
+    }
+
+    // Process
+    await _orderService.HandleOrderCreatedAsync(ctx.Message);
+
+    // Record as processed
+    _db.InboxMessages.Add(new InboxMessage { Id = messageId, ProcessedAt = DateTime.UtcNow });
+    await _db.SaveChangesAsync();
+    await tx.CommitAsync();
+}
+```
+
+---
+
+## 14. How do you design a .NET system for PCI DSS or HIPAA compliance?
+
+**A:**
+
+**Data protection:**
+```csharp
+// ASP.NET Core Data Protection API
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureKeyVault(keyVaultUri, credential)
+    .ProtectKeysWithAzureKeyVault(keyIdentifier, credential)
+    .SetApplicationName("MyApp");
+
+// Encrypt sensitive fields in EF Core
+[Encrypted]  // custom converter
+public string CardNumberHash { get; set; }
+```
+
+**Architecture:**
+- Dedicated VPC/VNet — no public access to data tier
+- All data encrypted at rest (AES-256) and in transit (TLS 1.2+)
+- Audit log for every data access: who, what, when — immutable (append-only Cosmos DB or Postgres + WAL shipping)
+- Secrets in Key Vault — no secrets in config or environment
+- Column-level encryption for PII (EF Core value converters with `IDataProtector`)
+- Regular penetration testing, vulnerability scanning in CI (`dotnet-retire`, Snyk)
+
+**Access control:**
+- RBAC + ABAC (Attribute-based) for fine-grained access
+- Short-lived tokens (15 min) with refresh token rotation
+- MFA for admin access
+
+---
+
+## 15. How would you architect real-time features (live dashboards, notifications) in .NET?
+
+**A:**
+
+**SignalR (WebSocket / long-polling fallback):**
+```csharp
+// Hub
+public class DashboardHub : Hub
+{
+    public async Task JoinGroup(string tenantId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, tenantId);
+    }
+}
+
+// Push from background service
+public class MetricsPublisher : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            var metrics = await _metricsService.GetLatestAsync(ct);
+            await _hubContext.Clients.Group(metrics.TenantId)
+                .SendAsync("MetricsUpdated", metrics, ct);
+            await Task.Delay(5000, ct);
+        }
+    }
+}
+```
+
+**Scale-out (multiple server instances):**
+```csharp
+// Redis backplane — routes messages to the correct server
+builder.Services.AddSignalR().AddStackExchangeRedis("redis:6379");
+```
+
+**Alternative for event streaming:** Server-Sent Events (SSE) for one-way push — simpler, works through HTTP/2, no WebSocket upgrade needed:
+```csharp
+app.MapGet("/events", async (HttpResponse resp, CancellationToken ct) =>
+{
+    resp.Headers["Content-Type"] = "text/event-stream";
+    await foreach (var evt in GetEventsAsync(ct))
+        await resp.WriteAsync($"data: {JsonSerializer.Serialize(evt)}\n\n", ct);
+});
+```
