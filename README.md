@@ -23,6 +23,7 @@ A curated, growing collection of **book summaries, key takeaways, structured not
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
 | 🐍 **Python / Django** | Summaries of Python web development books — Django, Docker, production practices | [Python/ →](./Python/README.md) |
+| ☕ **Java** | Interview preparation for Java, Spring Boot, Hibernate, Kafka, gRPC, and more | [Java/ →](./Java/README.md) |
 
 ---
 
@@ -114,6 +115,21 @@ Learning/
 │       ├── README.md
 │       ├── key-takeaways.md
 │       └── chapters/          ← 18 chapter notes
+│
+├── ☕ Java/                    ← Java interview preparation
+│   ├── README.md
+│   └── interview-questions/
+│       ├── junior.md
+│       ├── mid.md
+│       ├── senior.md
+│       ├── architect.md
+│       ├── spring-boot.md
+│       ├── hibernate-jpa.md
+│       ├── spring-security.md
+│       ├── messaging.md
+│       ├── grpc.md
+│       ├── maven-gradle.md
+│       └── testing.md
 │
 └── 🛠️ Pragmatic/              ← Software craft & philosophy books
     ├── README.md
