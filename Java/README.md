@@ -15,14 +15,26 @@ This section contains interview preparation materials for Java and the Spring ec
 | 🔴 Senior | [interview-questions/senior.md](interview-questions/senior.md) | JIT, GC, JVM profiling, virtual threads, structured concurrency, VarHandle, reflection |
 | 🏛️ Architect | [interview-questions/architect.md](interview-questions/architect.md) | Microservices, CQRS/ES, distributed transactions, observability, zero-downtime, ArchUnit |
 
-### Framework & Library Specific
+### Spring Ecosystem
 
 | Topic | File | Focus |
 |-------|------|-------|
-| 🌱 Spring Boot | [interview-questions/spring-boot.md](interview-questions/spring-boot.md) | Auto-configuration, beans, MVC, WebFlux, actuator, caching, @Transactional, testing |
+| 🌱 Spring Core | [interview-questions/spring-core.md](interview-questions/spring-core.md) | IoC, DI, AOP, bean lifecycle, SpEL, @Conditional, BeanPostProcessor, events |
+| 🚀 Spring Boot | [interview-questions/spring-boot.md](interview-questions/spring-boot.md) | Auto-configuration, MVC, WebFlux, actuator, caching, @Transactional, testing |
+| 🔐 Spring Security | [interview-questions/spring-security.md](interview-questions/spring-security.md) | JWT, OAuth2, method security, custom filters, CSRF, Spring Authorization Server |
+| ☁️ Spring Data & Cloud | [interview-questions/spring-data-cloud.md](interview-questions/spring-data-cloud.md) | Spring Data JPA/MongoDB/Redis, Specification, Spring Cloud Gateway, Feign, Eureka, Config |
+
+### Data Access
+
+| Topic | File | Focus |
+|-------|------|-------|
 | 🗄️ Hibernate / JPA | [interview-questions/hibernate-jpa.md](interview-questions/hibernate-jpa.md) | Entity lifecycle, relationships, N+1, caching, locking, Spring Data JPA, multi-tenancy |
-| 🔐 Spring Security | [interview-questions/spring-security.md](interview-questions/spring-security.md) | JWT, OAuth2, method security, custom filters, CSRF, CORS, testing |
-| 📬 Messaging | [interview-questions/messaging.md](interview-questions/messaging.md) | Kafka (Spring Kafka), RabbitMQ (Spring AMQP), outbox pattern, Saga, transactional events |
+
+### Communication & Messaging
+
+| Topic | File | Focus |
+|-------|------|-------|
+| 📬 Messaging | [interview-questions/messaging.md](interview-questions/messaging.md) | Spring Kafka, RabbitMQ, outbox, Saga, Avro schema registry, Kafka Streams |
 | 📡 gRPC | [interview-questions/grpc.md](interview-questions/grpc.md) | Proto setup, streaming, interceptors, TLS/mTLS, load balancing, Spring Boot integration |
 
 ### Tooling
@@ -30,7 +42,7 @@ This section contains interview preparation materials for Java and the Spring ec
 | Topic | File | Focus |
 |-------|------|-------|
 | 🔨 Maven & Gradle | [interview-questions/maven-gradle.md](interview-questions/maven-gradle.md) | Lifecycle, scopes, multi-module, CI/CD, custom plugins, BOM, build performance |
-| 🧪 Testing | [interview-questions/testing.md](interview-questions/testing.md) | JUnit 5, Mockito, AssertJ, MockMvc, DataJpaTest, Testcontainers, WireMock, contract testing |
+| 🧪 Testing | [interview-questions/testing.md](interview-questions/testing.md) | JUnit 5, Mockito, AssertJ, MockMvc, DataJpaTest, Testcontainers, WireMock, Pact |
 
 ---
 
