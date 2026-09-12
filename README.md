@@ -8,7 +8,7 @@
 
 > **"An investment in knowledge pays the best interest."** — Benjamin Franklin
 
-A curated, growing collection of **book summaries, key takeaways, and structured notes** across engineering and leadership domains. The goal is simple: read deeply, summarize clearly, revisit efficiently.
+A curated, growing collection of **book summaries, key takeaways, structured notes, and interview question banks** across engineering and leadership domains. The goal is simple: read deeply, summarize clearly, revisit efficiently.
 
 </div>
 
@@ -19,7 +19,7 @@ A curated, growing collection of **book summaries, key takeaways, and structured
 | Category | Description | Link |
 |----------|-------------|------|
 | 🐹 **Go Programming** | Summaries of Go (Golang) books — concurrency, patterns, performance & more | [Go/ →](./Go/README.md) |
-| 🔷 **C# Programming** | Summaries of C# books — async/await, parallel, reactive, and dataflow | [CSharp/ →](./CSharp/README.md) |
+| 🔷 **C# / .NET** | Summaries of C# books — async/await, parallel, reactive, and dataflow | [C# - .Net/ →](./C%23%20-%20.Net/README.md) |
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
 | 🐍 **Python / Django** | Summaries of Python web development books — Django, Docker, production practices | [Python/ →](./Python/README.md) |
@@ -33,6 +33,7 @@ This repository serves as a **personal knowledge base** built from real reading.
 1. 📝 **Structured chapter notes** — capturing the author's core arguments
 2. 💡 **Key takeaways** — the ideas worth remembering and acting on
 3. ⭐ **Personal rating & review** — honest thoughts on quality and applicability
+4. 🎤 **Interview questions** — junior → architect level Q&A per language/framework
 
 The summaries are intentionally **concise** — enough to refresh your memory without replacing the experience of reading the original.
 
@@ -45,38 +46,55 @@ Learning/
 │
 ├── 📄 README.md               ← You are here
 │
-├── 🐍 Python/                 ← Python / Django books
+├── 🐍 Python/                 ← Python / Django books + interview prep
 │   ├── README.md
 │   ├── django-for-professionals/
 │   │   ├── README.md
 │   │   ├── key-takeaways.md
 │   │   ├── generate_images.py
-│   │   ├── images/            ← 4 architecture diagrams (PNG)
+│   │   ├── images/            ← architecture diagrams (PNG)
 │   │   └── chapters/          ← 19 chapter notes
-│   └── two-scoops-of-django/
-│       ├── README.md
-│       ├── key-takeaways.md
-│       ├── generate_images.py
-│       ├── images/            ← architecture diagrams (PNG)
-│       └── chapters/          ← chapter notes
+│   ├── two-scoops-of-django/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   ├── generate_images.py
+│   │   ├── images/            ← architecture diagrams (PNG)
+│   │   └── chapters/          ← chapter notes
+│   └── interview-questions/
+│       ├── junior.md
+│       ├── mid.md
+│       ├── senior.md
+│       ├── architect.md
+│       ├── django.md          ← Django-specific (45 Q&A)
+│       └── fastapi.md         ← FastAPI-specific (40 Q&A)
 │
-├── 🐹 Go/                     ← Go programming books
+├── 🐹 Go/                     ← Go programming books + interview prep
 │   ├── README.md
 │   ├── the-go-programming-language/
 │   │   ├── README.md
 │   │   ├── key-takeaways.md
 │   │   └── chapters/          ← 13 chapter notes
-│   └── concurrency-in-go/
-│       ├── README.md
-│       ├── key-takeaways.md
-│       └── chapters/          ← 6 chapter notes
+│   ├── concurrency-in-go/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 6 chapter notes
+│   └── interview-questions/
+│       ├── junior.md
+│       ├── mid.md
+│       ├── senior.md
+│       └── architect.md
 │
-├── 🔷 CSharp/                 ← C# programming books
+├── 🔷 C# - .Net/              ← C# / .NET books + interview prep
 │   ├── README.md
-│   └── concurrency-in-csharp-cookbook/
-│       ├── README.md
-│       ├── key-takeaways.md
-│       └── chapters/          ← 14 chapter notes
+│   ├── concurrency-in-csharp-cookbook/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 14 chapter notes
+│   └── interview-questions/
+│       ├── junior.md
+│       ├── mid.md
+│       ├── senior.md
+│       └── architect.md
 │
 ├── 🧠 Managerial/             ← Management & leadership books
 │   ├── README.md
@@ -88,10 +106,14 @@ Learning/
 │   │   ├── README.md
 │   │   ├── key-takeaways.md
 │   │   └── chapters/          ← 9 chapter notes
-│   └── staff-engineer/
+│   ├── staff-engineer/
+│   │   ├── README.md
+│   │   ├── key-takeaways.md
+│   │   └── chapters/          ← 12 chapter notes
+│   └── become-effective-manager/
 │       ├── README.md
 │       ├── key-takeaways.md
-│       └── chapters/          ← 12 chapter notes
+│       └── chapters/          ← 18 chapter notes
 │
 └── 🛠️ Pragmatic/              ← Software craft & philosophy books
     ├── README.md
@@ -118,19 +140,19 @@ Learning/
     ├── system-design-interview-v2/
     │   ├── README.md
     │   ├── key-takeaways.md
-    │   ├── generate_images.py ← image generator script
+    │   ├── generate_images.py
     │   ├── images/            ← 15 architecture diagrams (PNG)
     │   └── chapters/          ← 13 chapter notes
     ├── system-design-interview/
     │   ├── README.md
     │   ├── key-takeaways.md
-    │   ├── generate_images.py ← image generator script
+    │   ├── generate_images.py
     │   ├── images/            ← 15 architecture diagrams (PNG)
     │   └── chapters/          ← 16 chapter notes
     └── cracking-the-coding-interview/
         ├── README.md
         ├── key-takeaways.md
-        ├── generate_images.py ← image generator script
+        ├── generate_images.py
         ├── images/            ← 12 DS&A diagrams (PNG)
         └── chapters/          ← 24 chapter notes
 ```
@@ -143,7 +165,7 @@ Learning/
 |----------|------|--------|
 | 🐹 Go Programming | [The Go Programming Language](./Go/the-go-programming-language/README.md) | 📖 In Progress |
 | 🐹 Go Programming | [Concurrency in Go](./Go/concurrency-in-go/README.md) | ✅ Complete |
-| 🔷 C# Programming | [Concurrency in C# Cookbook, 2nd Ed.](./CSharp/concurrency-in-csharp-cookbook/README.md) | ✅ Complete |
+| 🔷 C# / .NET | [Concurrency in C# Cookbook, 2nd Ed.](./C%23%20-%20.Net/concurrency-in-csharp-cookbook/README.md) | ✅ Complete |
 | 🧠 Managerial | [Engineering Leadership: The Hard Parts](./Managerial/engineering-leadership-the-hard-parts/README.md) | ✅ Complete |
 | 🧠 Managerial | [Team Topologies](./Managerial/team-topologies/README.md) | 📖 In Progress |
 | 🧠 Managerial | [The Manager's Path](./Managerial/the-managers-path/README.md) | 📖 In Progress |

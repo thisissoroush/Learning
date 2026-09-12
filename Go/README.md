@@ -1,48 +1,71 @@
-# 🐹 Go Programming — Book Summaries
+# 🐹 Go — Learning Resources
 
-> Concise summaries and key takeaways from books and resources on the **Go (Golang)** programming language.
-
----
-
-## 📌 About This Section
-
-This section contains structured notes, highlights, and summaries from Go-related books and learning materials. The goal is to distill the most important concepts so they can be revisited quickly without re-reading the entire book.
+This section contains book summaries, chapter notes, and interview preparation materials for Go — covering language fundamentals, concurrency, web frameworks, ORMs, messaging, and production patterns.
 
 ---
 
-## 📚 Books & Resources
+## 📚 Books
 
-| # | Title | Author | Status |
-|---|-------|--------|--------|
-| 1 | [The Go Programming Language](./the-go-programming-language/README.md) | Alan A. A. Donovan & Brian W. Kernighan | 📖 In Progress |
-| 2 | [Concurrency in Go](./concurrency-in-go/README.md) | Katherine Cox-Buday | ✅ Complete |
-
----
-
-## 🗂️ Topics Covered
-
-Based on the current book summaries, this section covers:
-
-- 🔤 **Go syntax & fundamentals** — declarations, variables, scope, basic data types, constants
-- 🔢 **Composite types** — arrays, slices, maps, structs, JSON encoding/decoding
-- 🔧 **Functions** — closures, recursion, variadic functions, `defer`, `panic`, `recover`
-- 🧩 **Methods & interfaces** — pointer receivers, embedding, implicit interface satisfaction, type assertions, type switches
-- 🔄 **Concurrency** — goroutines, channels, `select`, pipelines, cancellation, `sync.Mutex`, race conditions
-- 🚀 **Advanced concurrency** — CSP model, fan-out/in, rate limiting, heartbeats, goroutine healing, work stealing
--  **Packages & modules** — Go module system, imports, `go build`, `go test`, `go vet`
-- 🧪 **Testing** — `go test`, table-driven tests, benchmarks, coverage, `httptest`
-- 🪞 **Reflection** — `reflect` package, dynamic type inspection, `encoding` patterns
-- ⚡ **Low-level programming** — `unsafe` package, `cgo`, memory layout, interop with C
+| Book | Author | Focus |
+|------|--------|-------|
+| [The Go Programming Language](the-go-programming-language/README.md) | Donovan & Kernighan | Language fundamentals, data structures, interfaces, concurrency |
+| [Concurrency in Go](concurrency-in-go/README.md) | Katherine Cox-Buday | Goroutines, channels, sync primitives, patterns, scheduler |
 
 ---
 
-## 📖 How to Use
+## 🎯 Interview Questions
 
-Each book summary lives in its own subfolder. Inside you'll find:
-- `README.md` — Overview, key themes, and ratings
-- `chapters/` — Chapter-by-chapter notes *(where applicable)*
-- `key-takeaways.md` — The most actionable insights
+### Core Language
+
+| Level | File | Focus |
+|-------|------|-------|
+| 🟢 Junior | [interview-questions/junior.md](interview-questions/junior.md) | Syntax, types, goroutines, channels, interfaces |
+| 🟡 Mid | [interview-questions/mid.md](interview-questions/mid.md) | Goroutine leaks, select, sync, context, testing, modules |
+| 🔴 Senior | [interview-questions/senior.md](interview-questions/senior.md) | GC, pprof, memory model, generics, worker pools, escape analysis |
+| 🏛️ Architect | [interview-questions/architect.md](interview-questions/architect.md) | Event systems, gRPC, config, caching, scaling, multi-region |
+
+### Web Frameworks
+
+| Topic | File | Focus |
+|-------|------|-------|
+| 🌐 Gin | [interview-questions/gin.md](interview-questions/gin.md) | Routing, middleware, binding, auth, graceful shutdown, performance |
+| 🌿 Echo & Chi | [interview-questions/echo-chi.md](interview-questions/echo-chi.md) | Echo context/validation, Chi stdlib-compatible handlers, framework choice |
+
+### Data Access
+
+| Topic | File | Focus |
+|-------|------|-------|
+| 🐘 GORM | [interview-questions/gorm.md](interview-questions/gorm.md) | Models, CRUD, associations, hooks, scopes, migrations |
+| 🔧 SQLC | [interview-questions/sqlc.md](interview-questions/sqlc.md) | Code generation, type-safe queries, transactions, batch inserts |
+| 🔴 Redis | [interview-questions/redis.md](interview-questions/redis.md) | Caching, pub/sub, Streams, distributed locks, Lua scripts, Sentinel/Cluster |
+
+### Communication & Messaging
+
+| Topic | File | Focus |
+|-------|------|-------|
+| 📡 gRPC | [interview-questions/grpc.md](interview-questions/grpc.md) | Proto definitions, streaming, interceptors, deadlines, mTLS, buf |
+| 📬 Messaging | [interview-questions/messaging.md](interview-questions/messaging.md) | Kafka (franz-go), NATS/JetStream, Asynq, outbox pattern, DLQ |
+
+### Tooling & Infrastructure
+
+| Topic | File | Focus |
+|-------|------|-------|
+| 💉 Wire & Fx | [interview-questions/wire-fx.md](interview-questions/wire-fx.md) | Compile-time DI (Wire), runtime DI (Fx), lifecycle management |
+| 🌿 Viper | [interview-questions/viper.md](interview-questions/viper.md) | Config from files/env/remote, hot reload, secrets, multi-env |
+| 🧪 Testing | [interview-questions/testing.md](interview-questions/testing.md) | testify, mockery, testcontainers, fuzzing, benchmarks, build tags |
 
 ---
 
-*← Back to [Learning Root](../README.md)*
+## 🔑 Key Themes Across Go Books
+
+- **Concurrency via goroutines and channels** — communicate by sharing memory, not share memory to communicate
+- **Interfaces for composition** — small, focused interfaces over inheritance
+- **Error as values** — explicit error handling, wrapping with `%w`
+- **Context for cancellation** — propagate `context.Context` across all I/O
+- **Simplicity over cleverness** — readable code is maintainable code
+
+---
+
+## 🔗 Related Sections
+
+- [C# - .Net/interview-questions](../C%23%20-%20.Net/interview-questions/README.md) — Parallel interview prep for .NET
