@@ -24,6 +24,7 @@ A curated, growing collection of **book summaries, key takeaways, structured not
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
 | 🐍 **Python / Django** | Summaries of Python web development books — Django, Docker, production practices | [Python/ →](./Python/README.md) |
 | ☕ **Java** | Interview preparation for Java, Spring Boot, Hibernate, Kafka, gRPC, and more | [Java/ →](./Java/README.md) |
+| 🏗️ **Infrastructure** | Docker, Kubernetes, Kafka, RabbitMQ, Redis, Elasticsearch interview questions | [Infrastructure/ →](./Infrastructure/README.md) |
 
 ---
 
