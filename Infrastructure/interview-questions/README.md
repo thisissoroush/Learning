@@ -15,6 +15,14 @@ Interview questions for core infrastructure and DevOps topics, covering containe
 | 🔴 Redis | [redis.md](./redis.md) | Data types, persistence, replication, Sentinel, Cluster, distributed locks, Streams |
 | 🔍 Elasticsearch | [elasticsearch.md](./elasticsearch.md) | Indexing, search queries, aggregations, ILM, ELK stack, vector search |
 
+## Databases
+
+| Topic | File | Questions |
+|-------|------|-----------|
+| 🐘 PostgreSQL | [postgresql.md](./postgresql.md) | MVCC, VACUUM, indexes (all types), EXPLAIN ANALYZE, partitioning, replication, PgBouncer |
+| 🍃 MongoDB | [mongodb.md](./mongodb.md) | Documents, aggregation pipeline, indexes, schema patterns, replication, sharding, transactions |
+| 🪟 SQL Server | [sqlserver.md](./sqlserver.md) | Execution plans, Query Store, columnstore, Temporal tables, Always On AG, In-Memory OLTP, DMVs |
+
 ---
 
 ## 🔑 Key Themes
