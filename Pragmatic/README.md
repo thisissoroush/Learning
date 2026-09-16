@@ -35,6 +35,7 @@ Language-agnostic, framework-independent fundamentals. These questions appear in
 | 🔌 API & Integration | [interview-questions/api-fundamentals.md](interview-questions/api-fundamentals.md) | REST, HTTP methods, GraphQL, webhooks, rate limiting, idempotency |
 | 🗄️ Database Fundamentals | [interview-questions/database-fundamentals.md](interview-questions/database-fundamentals.md) | ACID, isolation levels, indexes, N+1, sharding, OLTP vs OLAP |
 | 🧪 Testing Fundamentals | [interview-questions/testing-fundamentals.md](interview-questions/testing-fundamentals.md) | Test pyramid, TDD, AAA, mocks vs stubs, contract testing |
+| 🌐 Frontend | [interview-questions/frontend.md](interview-questions/frontend.md) | Browser rendering, event loop, closures, DOM, CORS, React hooks/memo/context/Suspense/signals, Angular DI/RxJS/change detection/forms/signals |
 
 ---
 
