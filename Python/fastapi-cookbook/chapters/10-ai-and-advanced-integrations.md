@@ -1,237 +1,416 @@
 # Chapter 10 — AI and Advanced Integrations
 
-> **Projects:** `chef_ai`, `ecotech_RAG`, `ai_doctor`, `graphql`, `grpc_gateway`
-> **Source:** [GitHub](https://github.com/PacktPublishing/FastAPI-Cookbook/tree/main/Chapter10)
+> **Projects:** `chef_ai`, `ecotech_RAG`, `graphql`, `grpc_gateway`
 
 ---
 
 ## 🎯 What This Chapter Covers
 
-Integrating AI/LLM APIs (Cohere), RAG with LangChain + Chroma vector store, GraphQL with Strawberry, and a gRPC gateway pattern.
+Integrating LLM APIs (Cohere) for conversational AI, building a RAG (Retrieval-Augmented Generation) system with LangChain and Chroma vector store, adding a GraphQL interface with Strawberry, and building a gRPC gateway that lets HTTP clients talk to gRPC services.
 
 ---
 
-## 🤖 Chef AI — Conversational Chatbot (Cohere)
+## 🤖 Chef AI — Stateful Conversational Chatbot
+
+The chef chatbot maintains conversation history across messages. The key challenge: HTTP is stateless, but LLMs need context. The solution: store conversation history in `request.state`, which FastAPI initializes from the `lifespan` context.
 
 ```python
+# chef_ai/main.py
 from contextlib import asynccontextmanager
+from typing import Annotated
+import cohere
 from fastapi import Body, FastAPI, Request
-from cohere import ChatMessage
+from pydantic import BaseModel
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield {"messages": []}    # conversation history stored in app state
+    """
+    Yield a dict — anything in it becomes request.state attributes.
+    Here we initialize an empty conversation history list.
+    """
+    yield {"messages": []}   # shared mutable state for the app lifetime
 
-app = FastAPI(title="Chef Cuisine Chatbot App", lifespan=lifespan)
+app = FastAPI(title="Chef AI Chatbot", lifespan=lifespan)
 
-@app.post("/query")
-async def query_chat_bot(
-    request: Request,
-    query: Annotated[str, Body(min_length=1)],
-) -> str:
-    answer = await generate_chat_completion(query, request.state.messages)
-    return answer
-
-@app.get("/messages")
-def get_conversation_history(request: Request) -> MessagesResponse:
-    return MessagesResponse.from_chat_messages(messages=request.state.messages)
-
-@app.post("/restart-conversation")
-def restart_conversation(request: Request):
-    request.state.messages = []
-    return {"message": "Conversation restarted"}
-```
-
-```python
-# handlers.py — Cohere API call
-import cohere
-
+# chef_ai/handlers.py
 async def generate_chat_completion(
     query: str,
-    messages: list[ChatMessage],
+    history: list,              # previous messages in this conversation
 ) -> str:
-    co = cohere.AsyncClient()
+    """
+    Call Cohere's chat API with the full conversation history.
+    The history lets the model remember previous turns.
+    """
+    co = cohere.AsyncClient()   # uses COHERE_API_KEY from environment
+
     response = await co.chat(
         message=query,
-        chat_history=messages,
+        chat_history=history,   # pass ALL previous messages
         model="command-r",
-        preamble="You are a helpful chef assistant who only answers questions about cooking.",
+        preamble=(
+            "You are a helpful chef assistant. You ONLY answer questions about "
+            "cooking, recipes, ingredients, and kitchen techniques. For any other "
+            "topic, politely decline and redirect to food-related questions."
+        ),
     )
-    # Store conversation history
-    messages.append(ChatMessage(role="USER", message=query))
-    messages.append(ChatMessage(role="CHATBOT", message=response.text))
-    return response.text
-```
 
-**Key pattern:** Conversation history stored in `request.state` (lifespan-initialized) — no DB needed for simple chatbots.
+    # Update history with this exchange
+    history.append({"role": "USER", "message": query})
+    history.append({"role": "CHATBOT", "message": response.text})
+
+    return response.text
+
+# Endpoints
+@app.post("/chat")
+async def chat(
+    request: Request,
+    query: Annotated[str, Body(min_length=1, example="How do I make pasta carbonara?")],
+) -> str:
+    """
+    Send a message to the chef.
+    request.state.messages persists the conversation history across calls.
+    """
+    return await generate_chat_completion(query, request.state.messages)
+
+@app.get("/history")
+def get_history(request: Request) -> list:
+    """Return the full conversation so far."""
+    return request.state.messages
+
+@app.post("/restart")
+def restart_conversation(request: Request):
+    """Clear conversation history — start fresh."""
+    request.state.messages.clear()
+    return {"message": "Conversation cleared"}
+```
 
 ---
 
-## 📚 Ecotech RAG — Retrieval Augmented Generation
+## 📚 Ecotech RAG — Retrieval-Augmented Generation
+
+RAG solves a core LLM problem: LLMs don't know about YOUR documents (company policies, product manuals, recent research). RAG fixes this by:
+1. Splitting your documents into chunks and storing them as vector embeddings
+2. When a question arrives, finding the most relevant chunks (semantic search)
+3. Injecting those chunks into the LLM prompt as context
+4. The LLM answers based on YOUR documents, not its training data
+
+```
+User question: "What's our return policy for electronics?"
+    ↓
+Embed the question → search vector DB for similar chunks
+    ↓
+Found: [chunk from returns_policy.pdf page 3]
+    ↓
+Prompt: "Answer based only on this context:\n{chunk}\n\nQuestion: {question}"
+    ↓
+LLM response: "Electronics can be returned within 30 days with original packaging..."
+```
 
 ```python
+# ecotech_rag/main.py
 from contextlib import asynccontextmanager
+from typing import Annotated
 from fastapi import Body, FastAPI, HTTPException, Request, UploadFile
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_cohere import CohereEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
+from pathlib import Path
+
+DOCS_DIR = Path("docs")
+DOCS_DIR.mkdir(exist_ok=True)
+
+async def load_existing_documents(db: Chroma):
+    """Load any documents that were saved in previous sessions."""
+    for doc_path in DOCS_DIR.glob("*.txt"):
+        text = doc_path.read_text()
+        doc = Document(page_content=text, metadata={"source": doc_path.name})
+        await db.aadd_documents([doc])
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db = Chroma(embedding_function=CohereEmbeddings())
-    await load_documents(db)     # pre-load docs into vector store
-    yield {"db": db}             # make vector store available via request.state
+    # Create the vector store with Cohere embeddings
+    # Chroma stores embeddings in-memory (or on disk) — no separate DB needed
+    db = Chroma(embedding_function=CohereEmbeddings(model="embed-english-v3.0"))
+    await load_existing_documents(db)
+    yield {"db": db}   # available as request.state.db
 
 app = FastAPI(title="Ecotech AI Assistant", lifespan=lifespan)
 
-@app.post("/message")
-async def query_assistant(
-    request: Request,
-    question: Annotated[str, Body()],
-) -> str:
-    context = get_context(question, request.state.db)   # retrieve relevant chunks
-    response = await chain.ainvoke({
-        "question": question,
-        "context": context,
-    })
-    return response
+# ecotech_rag/retrieval.py
+def get_relevant_context(question: str, db: Chroma, k: int = 4) -> str:
+    """
+    Find the k most relevant document chunks for the question.
+    Returns them as a single string to inject into the prompt.
+    """
+    # similarity_search uses cosine similarity on embeddings
+    relevant_docs = db.similarity_search(question, k=k)
+    context_parts = []
+    for i, doc in enumerate(relevant_docs, 1):
+        context_parts.append(f"[Source {i}: {doc.metadata.get('source', 'unknown')}]")
+        context_parts.append(doc.page_content)
+    return "\n\n".join(context_parts)
 
-@app.post("/add_document")
-async def add_document(request: Request, file: UploadFile):
-    if file.content_type != "text/plain":
-        raise HTTPException(status_code=400, detail="File must be a text file")
-
-    content = file.file.read().decode()
-    text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
-    chunks = text_splitter.split_documents([Document(content)])
-    await request.state.db.aadd_documents(chunks)
-
-    # Persist file
-    with open(f"docs/{file.filename}", "w") as buffer:
-        buffer.write(content)
-
-    return {"filename": file.filename}
-```
-
-```python
-# model.py — LangChain chain
+# ecotech_rag/model.py
 from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 prompt = ChatPromptTemplate.from_template("""
-Answer the question based only on the following context:
+You are an assistant for Ecotech company. Answer questions using ONLY the context below.
+If the answer is not in the context, say "I don't have that information in my documents."
+Do not make up information.
+
+Context:
 {context}
 
 Question: {question}
+
+Answer:
 """)
 
-llm = ChatCohere(model="command-r")
+llm = ChatCohere(model="command-r", temperature=0)
 chain = prompt | llm | StrOutputParser()
-```
 
-**RAG flow:**
-```
-User question
-    → embed question (CohereEmbeddings)
-    → vector similarity search in Chroma
-    → retrieve top-K relevant document chunks (context)
-    → LLM prompt: "Answer based only on context: {context}\nQuestion: {question}"
-    → streamed/awaited response
+# Endpoints
+@app.post("/ask")
+async def ask_question(
+    request: Request,
+    question: Annotated[str, Body(min_length=5)],
+) -> str:
+    """Answer a question using documents in the vector store."""
+    db = request.state.db
+    context = get_relevant_context(question, db)
+
+    if not context:
+        raise HTTPException(
+            status_code=404,
+            detail="No relevant documents found. Upload documents first.",
+        )
+
+    return await chain.ainvoke({"question": question, "context": context})
+
+@app.post("/documents", status_code=201)
+async def upload_document(request: Request, file: UploadFile):
+    """
+    Upload a text document to the knowledge base.
+    The document is split into chunks and stored as embeddings.
+    """
+    if not file.content_type == "text/plain":
+        raise HTTPException(status_code=400, detail="Only .txt files accepted")
+
+    content = (await file.read()).decode("utf-8")
+
+    # Split into chunks for better retrieval granularity
+    # chunk_size: tokens per chunk (larger = more context, less precision)
+    # chunk_overlap: overlap between chunks (prevents splitting important sentences)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50,
+        separators=["\n\n", "\n", ". ", " "],
+    )
+    chunks = splitter.create_documents(
+        texts=[content],
+        metadatas=[{"source": file.filename}],
+    )
+
+    # Add to vector store (embeddings computed here)
+    db = request.state.db
+    await db.aadd_documents(chunks)
+
+    # Save to disk for persistence across restarts
+    (DOCS_DIR / file.filename).write_text(content)
+
+    return {
+        "filename": file.filename,
+        "chunks_created": len(chunks),
+        "message": f"Document indexed in {len(chunks)} chunks",
+    }
+
+@app.delete("/documents/{filename}")
+async def delete_document(filename: str, request: Request):
+    """Remove a document from the knowledge base."""
+    file_path = DOCS_DIR / Path(filename).name   # prevent path traversal
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    file_path.unlink()
+    # Note: removing from Chroma requires knowing the document IDs — implementation varies
+    return {"message": f"Deleted {filename}"}
 ```
 
 ---
 
 ## 🍓 GraphQL with Strawberry
 
+GraphQL lets clients request exactly the fields they need. One endpoint serves many different query shapes.
+
 ```python
+# graphql_app/schema.py
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 from fastapi import FastAPI
+from typing import Optional
 
+# Define types with @strawberry.type decorator
 @strawberry.type
 class Song:
     id: int
     title: str
     artist: str
     genre: str
+    year: int
+    # duration is optional — some songs in the DB might not have it
+    duration_seconds: Optional[int] = None
 
 @strawberry.type
 class Query:
     @strawberry.field
-    def songs(self) -> list[Song]:
-        return get_all_songs_from_db()
+    def songs(
+        self,
+        genre: Optional[str] = None,
+        limit: int = 20,
+    ) -> list[Song]:
+        """Fetch songs, optionally filtered by genre."""
+        # In production: query from DB
+        all_songs = get_songs_from_db(genre=genre, limit=limit)
+        return all_songs
 
     @strawberry.field
-    def song(self, id: int) -> Song | None:
+    def song(self, id: int) -> Optional[Song]:
+        """Fetch a single song by ID."""
         return get_song_by_id(id)
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def add_song(self, title: str, artist: str, genre: str) -> Song:
-        return create_song(title, artist, genre)
+    def add_song(
+        self,
+        title: str,
+        artist: str,
+        genre: str,
+        year: int,
+    ) -> Song:
+        """Add a new song to the catalog."""
+        return create_song_in_db(title, artist, genre, year)
 
+# Mount the GraphQL router
 schema = strawberry.Schema(query=Query, mutation=Mutation)
-graphql_app = GraphQLRouter(schema)
+graphql_router = GraphQLRouter(schema, graphiql=True)   # graphiql = interactive browser IDE
 
 app = FastAPI()
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(graphql_router, prefix="/graphql")
 ```
 
-**Why GraphQL over REST?**
-- Client requests exactly the fields it needs — no over/under-fetching
-- Single endpoint (`/graphql`) instead of many REST routes
-- Introspection — clients can discover the schema automatically
-- Better for complex nested data (playlists → songs → artists)
+```graphql
+# Example GraphQL query — client gets exactly what it asks for
+query {
+  songs(genre: "rock", limit: 5) {
+    title    # only these fields
+    artist   # no genre, no id, no duration
+  }
+}
+
+# Result:
+# {"data": {"songs": [
+#   {"title": "Hotel California", "artist": "Eagles"},
+#   ...
+# ]}}
+```
 
 ---
 
-## 🔗 gRPC Gateway
+## 🔗 gRPC Gateway — HTTP Frontend for gRPC Backend
+
+Sometimes a backend service uses gRPC (fast binary protocol) but your clients want REST. A FastAPI gRPC gateway translates HTTP → gRPC.
 
 ```proto
-// grpcserver.proto
+// grpcserver.proto — defines the gRPC service
 syntax = "proto3";
 
-service GrpcServer {
-    rpc GetServerResponse(Message) returns (MessageResponse) {}
+service DataService {
+    rpc GetData(DataRequest) returns (DataResponse) {}
+    rpc ProcessBatch(BatchRequest) returns (BatchResponse) {}
 }
 
-message Message {
-    string message = 1;
+message DataRequest {
+    string query = 1;
 }
 
-message MessageResponse {
-    string message = 1;
-    bool received = 2;
+message DataResponse {
+    string result = 1;
+    bool success = 2;
+    float confidence = 3;
 }
 ```
 
 ```python
-# FastAPI acts as HTTP gateway → forwards to gRPC server
-from fastapi import FastAPI
+# gateway/main.py
 import grpc
-import grpcserver_pb2, grpcserver_pb2_grpc
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+# These are generated from the .proto file with: python -m grpc_tools.protoc ...
+import grpcserver_pb2 as pb2
+import grpcserver_pb2_grpc as pb2_grpc
 
-app = FastAPI()
+app = FastAPI(title="gRPC Gateway")
 
-@app.post("/grpc-call")
-async def call_grpc_service(message: str):
-    async with grpc.aio.insecure_channel("localhost:50051") as channel:
-        stub = grpcserver_pb2_grpc.GrpcServerStub(channel)
-        response = await stub.GetServerResponse(
-            grpcserver_pb2.Message(message=message)
+class QueryRequest(BaseModel):
+    query: str
+
+class QueryResponse(BaseModel):
+    result: str
+    success: bool
+    confidence: float
+
+GRPC_SERVER = "localhost:50051"
+
+@app.post("/query", response_model=QueryResponse)
+async def proxy_to_grpc(request: QueryRequest):
+    """
+    Accept an HTTP POST, forward it to the gRPC backend, return the result as JSON.
+    HTTP clients don't need to know gRPC exists.
+    """
+    try:
+        async with grpc.aio.insecure_channel(GRPC_SERVER) as channel:
+            stub = pb2_grpc.DataServiceStub(channel)
+
+            # Call the gRPC method — returns a protobuf message
+            grpc_response = await stub.GetData(
+                pb2.DataRequest(query=request.query),
+                timeout=5.0,    # don't wait forever if gRPC server is slow
+            )
+
+        return QueryResponse(
+            result=grpc_response.result,
+            success=grpc_response.success,
+            confidence=grpc_response.confidence,
         )
-    return {"message": response.message, "received": response.received}
+
+    except grpc.RpcError as e:
+        # Map gRPC status codes to HTTP status codes
+        code = e.code()
+        if code == grpc.StatusCode.NOT_FOUND:
+            raise HTTPException(status_code=404, detail=e.details())
+        elif code == grpc.StatusCode.INVALID_ARGUMENT:
+            raise HTTPException(status_code=400, detail=e.details())
+        elif code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            raise HTTPException(status_code=504, detail="gRPC server timed out")
+        else:
+            raise HTTPException(status_code=500, detail=f"gRPC error: {e.details()}")
 ```
 
 ---
 
 ## 🔑 Key Takeaways
 
-- `request.state` from `lifespan` yield is the clean way to share app-level resources (vector DB, LLM client, connection pools)
-- RAG = embed query → vector search → inject context → LLM — LangChain chains make this composable
-- `CharacterTextSplitter(chunk_size=100, chunk_overlap=0)` chunks documents for embedding
-- Strawberry GraphQL integrates with FastAPI via `GraphQLRouter` — one line to mount
-- gRPC gateway: FastAPI handles HTTP, proxies to gRPC service — best of both worlds
-- `chain = prompt | llm | StrOutputParser()` — LangChain pipe syntax composes processing steps
+| Concept | The "why" |
+|---------|-----------|
+| `request.state` from `lifespan` | The only clean way to share app-level resources (vector DB, LLM client) across requests |
+| Conversation history in `lifespan` state | HTTP is stateless — state must live somewhere; simple apps use memory, prod uses Redis |
+| RAG = retrieval + injection + generation | LLMs answer from YOUR docs, not training data — chain is: embed → search → prompt → response |
+| `RecursiveCharacterTextSplitter` | Splits text intelligently at paragraph/sentence/word boundaries — better retrieval |
+| Strawberry `@strawberry.type` + `@strawberry.field` | Pure Python → GraphQL schema — no SDL files needed |
+| `graphiql=True` | Interactive browser IDE at `/graphql` — great for dev/testing |
+| `grpc.aio.insecure_channel` | Async gRPC client — matches FastAPI's async model |
+| Map `grpc.StatusCode` → HTTP status | gRPC clients see grpc codes; HTTP clients need HTTP codes — always translate |
