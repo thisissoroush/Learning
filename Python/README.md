@@ -19,6 +19,7 @@ This section contains structured notes, highlights, and summaries from books foc
 | 3 | [Two Scoops of Django 3.x](./two-scoops-of-django/README.md) | Daniel & Audrey Feldroy | ✅ Complete |
 | 4 | [Fluent Python 2e](./fluent-python/README.md) | Luciano Ramalho | ✅ Complete |
 | 5 | [FastAPI Cookbook](./fastapi-cookbook/README.md) | Giunio De Luca | ✅ Complete |
+| 6 | [Python Crash Course 3e](./python-crash-course/README.md) | Eric Matthes | ✅ Complete |
 
 ### Book 1: Architecture Patterns with Python
 > **Focus:** Domain-Driven Design, TDD, Event-Driven Architecture

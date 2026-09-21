@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" width="860" height="520">
+  <rect width="860" height="520" fill="#1e1e2e"/>
+  <text x="430" y="38" text-anchor="middle" fill="#cdd6f4" font-size="19" font-weight="bold" font-family="monospace">Python Control Flow</text>
+
+  <!-- if/elif/else -->
+  <rect x="20" y="65" width="250" height="200" rx="8" fill="#181825" stroke="#a6e3a1" stroke-width="2"/>
+  <text x="145" y="88" text-anchor="middle" fill="#a6e3a1" font-size="13" font-weight="bold" font-family="monospace">if / elif / else</text>
+  <text x="35" y="110" fill="#cba6f7" font-size="11" font-family="monospace">if age &lt; 4:</text>
+  <text x="35" y="126" fill="#cdd6f4" font-size="11" font-family="monospace">    print("Free")</text>
+  <text x="35" y="142" fill="#cba6f7" font-size="11" font-family="monospace">elif age &lt; 18:</text>
+  <text x="35" y="158" fill="#cdd6f4" font-size="11" font-family="monospace">    print("$25")</text>
+  <text x="35" y="174" fill="#cba6f7" font-size="11" font-family="monospace">else:</text>
+  <text x="35" y="190" fill="#cdd6f4" font-size="11" font-family="monospace">    print("$40")</text>
+  <text x="35" y="216" fill="#585b70" font-size="10" font-family="monospace">Only first matching runs</text>
+  <text x="35" y="232" fill="#585b70" font-size="10" font-family="monospace">Separate ifs = all checked</text>
+  <text x="35" y="250" fill="#585b70" font-size="10" font-family="monospace">and / or / not / in / not in</text>
+
+  <!-- for loop -->
+  <rect x="300" y="65" width="250" height="200" rx="8" fill="#181825" stroke="#89b4fa" stroke-width="2"/>
+  <text x="425" y="88" text-anchor="middle" fill="#89b4fa" font-size="13" font-weight="bold" font-family="monospace">for loops</text>
+  <text x="315" y="110" fill="#cba6f7" font-size="11" font-family="monospace">for item in my_list:</text>
+  <text x="315" y="126" fill="#cdd6f4" font-size="11" font-family="monospace">    print(item)</text>
+  <text x="315" y="145" fill="#cba6f7" font-size="11" font-family="monospace">for i in range(1, 11):</text>
+  <text x="315" y="161" fill="#cdd6f4" font-size="11" font-family="monospace">    print(i)</text>
+  <text x="315" y="180" fill="#cba6f7" font-size="11" font-family="monospace">for k, v in d.items():</text>
+  <text x="315" y="196" fill="#cdd6f4" font-size="11" font-family="monospace">    print(f"{k}: {v}")</text>
+  <text x="315" y="220" fill="#a6e3a1" font-size="10" font-family="monospace">List comprehension:</text>
+  <text x="315" y="236" fill="#cdd6f4" font-size="10" font-family="monospace">[x**2 for x in range(10)]</text>
+  <text x="315" y="252" fill="#cdd6f4" font-size="10" font-family="monospace">[x for x in lst if x &gt; 0]</text>
+
+  <!-- while loop -->
+  <rect x="580" y="65" width="260" height="200" rx="8" fill="#181825" stroke="#fab387" stroke-width="2"/>
+  <text x="710" y="88" text-anchor="middle" fill="#fab387" font-size="13" font-weight="bold" font-family="monospace">while loops</text>
+  <text x="595" y="110" fill="#cba6f7" font-size="11" font-family="monospace">while condition:</text>
+  <text x="595" y="126" fill="#cdd6f4" font-size="11" font-family="monospace">    do_something()</text>
+  <text x="595" y="145" fill="#585b70" font-size="10" font-family="monospace">— Flag pattern —</text>
+  <text x="595" y="161" fill="#cdd6f4" font-size="10" font-family="monospace">active = True</text>
+  <text x="595" y="177" fill="#cba6f7" font-size="10" font-family="monospace">while active:</text>
+  <text x="595" y="193" fill="#cdd6f4" font-size="10" font-family="monospace">    if quit: active = False</text>
+  <text x="595" y="213" fill="#f38ba8" font-size="10" font-family="monospace">break  — exit immediately</text>
+  <text x="595" y="229" fill="#f38ba8" font-size="10" font-family="monospace">continue — skip, loop again</text>
+  <text x="595" y="249" fill="#a6e3a1" font-size="10" font-family="monospace">while my_list:  (until empty)</text>
+
+  <!-- Functions -->
+  <rect x="20" y="295" width="250" height="195" rx="8" fill="#181825" stroke="#cba6f7" stroke-width="2"/>
+  <text x="145" y="318" text-anchor="middle" fill="#cba6f7" font-size="13" font-weight="bold" font-family="monospace">functions</text>
+  <text x="35" y="340" fill="#cba6f7" font-size="11" font-family="monospace">def greet(name, greeting='Hi'):</text>
+  <text x="35" y="356" fill="#cdd6f4" font-size="11" font-family="monospace">    return f"{greeting}, {name}"</text>
+  <text x="35" y="376" fill="#585b70" font-size="10" font-family="monospace">Positional: greet('Alice', 'Hello')</text>
+  <text x="35" y="392" fill="#585b70" font-size="10" font-family="monospace">Keyword: greet(name='Alice')</text>
+  <text x="35" y="412" fill="#a6e3a1" font-size="10" font-family="monospace">*args  → tuple of extra args</text>
+  <text x="35" y="428" fill="#a6e3a1" font-size="10" font-family="monospace">**kwargs → dict of keyword args</text>
+  <text x="35" y="448" fill="#585b70" font-size="10" font-family="monospace">pass list[:] to prevent mutation</text>
+  <text x="35" y="468" fill="#585b70" font-size="10" font-family="monospace">import module  |  from m import f</text>
+
+  <!-- Classes -->
+  <rect x="300" y="295" width="250" height="195" rx="8" fill="#181825" stroke="#f9e2af" stroke-width="2"/>
+  <text x="425" y="318" text-anchor="middle" fill="#f9e2af" font-size="13" font-weight="bold" font-family="monospace">classes</text>
+  <text x="315" y="340" fill="#cba6f7" font-size="11" font-family="monospace">class Dog:</text>
+  <text x="315" y="356" fill="#cba6f7" font-size="11" font-family="monospace">    def __init__(self, name):</text>
+  <text x="315" y="372" fill="#cdd6f4" font-size="11" font-family="monospace">        self.name = name</text>
+  <text x="315" y="388" fill="#cba6f7" font-size="11" font-family="monospace">    def sit(self):</text>
+  <text x="315" y="404" fill="#cdd6f4" font-size="11" font-family="monospace">        print("Sitting")</text>
+  <text x="315" y="424" fill="#585b70" font-size="10" font-family="monospace">Inheritance: class Puppy(Dog):</text>
+  <text x="315" y="440" fill="#585b70" font-size="10" font-family="monospace">    super().__init__(name)</text>
+  <text x="315" y="460" fill="#a6e3a1" font-size="10" font-family="monospace">Composition: self.battery = Battery()</text>
+
+  <!-- Exceptions -->
+  <rect x="580" y="295" width="260" height="195" rx="8" fill="#181825" stroke="#f38ba8" stroke-width="2"/>
+  <text x="710" y="318" text-anchor="middle" fill="#f38ba8" font-size="13" font-weight="bold" font-family="monospace">exceptions</text>
+  <text x="595" y="340" fill="#cba6f7" font-size="11" font-family="monospace">try:</text>
+  <text x="595" y="356" fill="#cdd6f4" font-size="11" font-family="monospace">    risky_call()</text>
+  <text x="595" y="372" fill="#cba6f7" font-size="11" font-family="monospace">except ZeroDivisionError:</text>
+  <text x="595" y="388" fill="#cdd6f4" font-size="11" font-family="monospace">    handle_error()</text>
+  <text x="595" y="404" fill="#cba6f7" font-size="11" font-family="monospace">else:</text>
+  <text x="595" y="420" fill="#cdd6f4" font-size="11" font-family="monospace">    success_path()</text>
+  <text x="595" y="440" fill="#585b70" font-size="10" font-family="monospace">pass  = silent fail (ok sometimes)</text>
+  <text x="595" y="456" fill="#585b70" font-size="10" font-family="monospace">FileNotFoundError</text>
+  <text x="595" y="472" fill="#585b70" font-size="10" font-family="monospace">ValueError  TypeError</text>
+</svg>

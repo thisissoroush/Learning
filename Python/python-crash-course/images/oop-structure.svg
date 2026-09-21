@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <rect width="800" height="480" fill="#1e1e2e"/>
+  <text x="400" y="38" text-anchor="middle" fill="#cdd6f4" font-size="19" font-weight="bold" font-family="monospace">Python OOP — Class Structure</text>
+
+  <!-- Parent Class -->
+  <rect x="250" y="60" width="300" height="175" rx="8" fill="#181825" stroke="#89b4fa" stroke-width="2"/>
+  <rect x="250" y="60" width="300" height="32" rx="8" fill="#313244"/>
+  <text x="400" y="82" text-anchor="middle" fill="#89b4fa" font-size="13" font-weight="bold" font-family="monospace">Car (Parent Class)</text>
+  <text x="265" y="108" fill="#cba6f7" font-size="11" font-family="monospace">def __init__(self, make, model, year):</text>
+  <text x="265" y="124" fill="#cdd6f4" font-size="11" font-family="monospace">    self.make = make</text>
+  <text x="265" y="140" fill="#cdd6f4" font-size="11" font-family="monospace">    self.model = model</text>
+  <text x="265" y="156" fill="#cdd6f4" font-size="11" font-family="monospace">    self.odometer = 0  # default</text>
+  <text x="265" y="178" fill="#a6e3a1" font-size="11" font-family="monospace">def get_descriptive_name(self):</text>
+  <text x="265" y="194" fill="#a6e3a1" font-size="11" font-family="monospace">def update_odometer(self, miles):</text>
+  <text x="265" y="210" fill="#a6e3a1" font-size="11" font-family="monospace">def read_odometer(self):</text>
+  <text x="265" y="228" fill="#585b70" font-size="10" font-family="monospace">shared by all subclasses ↓</text>
+
+  <!-- Inheritance arrow -->
+  <line x1="400" y1="235" x2="200" y2="295" stroke="#cba6f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="400" y1="235" x2="600" y2="295" stroke="#cba6f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="275" y="270" fill="#cba6f7" font-size="10" font-family="monospace">inherits</text>
+  <text x="525" y="270" fill="#cba6f7" font-size="10" font-family="monospace">inherits</text>
+
+  <!-- Child class 1 -->
+  <rect x="30" y="295" width="310" height="160" rx="8" fill="#181825" stroke="#a6e3a1" stroke-width="2"/>
+  <rect x="30" y="295" width="310" height="32" rx="8" fill="#313244"/>
+  <text x="185" y="317" text-anchor="middle" fill="#a6e3a1" font-size="13" font-weight="bold" font-family="monospace">ElectricCar (Child)</text>
+  <text x="45" y="343" fill="#cba6f7" font-size="11" font-family="monospace">def __init__(self, make, model, year):</text>
+  <text x="45" y="359" fill="#89b4fa" font-size="11" font-family="monospace">    super().__init__(make, model, year)</text>
+  <text x="45" y="375" fill="#cdd6f4" font-size="11" font-family="monospace">    self.battery = Battery()  # composition</text>
+  <text x="45" y="397" fill="#a6e3a1" font-size="11" font-family="monospace">def describe_battery(self):  # new method</text>
+  <text x="45" y="413" fill="#f38ba8" font-size="11" font-family="monospace">def fill_gas_tank(self):     # override!</text>
+  <text x="45" y="429" fill="#585b70" font-size="10" font-family="monospace">    print("No gas tank")     # replaces parent</text>
+  <text x="45" y="445" fill="#585b70" font-size="10" font-family="monospace">Inherits: get_descriptive_name, update_odometer</text>
+
+  <!-- Child class 2 -->
+  <rect x="460" y="295" width="310" height="160" rx="8" fill="#181825" stroke="#fab387" stroke-width="2"/>
+  <rect x="460" y="295" width="310" height="32" rx="8" fill="#313244"/>
+  <text x="615" y="317" text-anchor="middle" fill="#fab387" font-size="13" font-weight="bold" font-family="monospace">SportsCar (Child)</text>
+  <text x="475" y="343" fill="#cba6f7" font-size="11" font-family="monospace">def __init__(self, make, model, year):</text>
+  <text x="475" y="359" fill="#89b4fa" font-size="11" font-family="monospace">    super().__init__(make, model, year)</text>
+  <text x="475" y="375" fill="#cdd6f4" font-size="11" font-family="monospace">    self.turbo = True</text>
+  <text x="475" y="397" fill="#a6e3a1" font-size="11" font-family="monospace">def boost(self):   # new method</text>
+  <text x="475" y="429" fill="#585b70" font-size="10" font-family="monospace">Inherits all Car methods</text>
+  <text x="475" y="445" fill="#585b70" font-size="10" font-family="monospace">No overrides — uses parent as-is</text>
+
+  <!-- Composition box -->
+  <rect x="570" y="60" width="210" height="110" rx="8" fill="#181825" stroke="#94e2d5" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="675" y="82" text-anchor="middle" fill="#94e2d5" font-size="12" font-weight="bold" font-family="monospace">Battery (Composed)</text>
+  <text x="585" y="102" fill="#cdd6f4" font-size="10" font-family="monospace">def __init__(self, size=40):</text>
+  <text x="585" y="118" fill="#cdd6f4" font-size="10" font-family="monospace">    self.battery_size = size</text>
+  <text x="585" y="138" fill="#a6e3a1" font-size="10" font-family="monospace">def describe_battery(self):</text>
+  <text x="585" y="154" fill="#a6e3a1" font-size="10" font-family="monospace">def get_range(self):</text>
+
+  <!-- composition arrow -->
+  <line x1="570" y1="120" x2="340" y2="374" stroke="#94e2d5" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="410" y="240" fill="#94e2d5" font-size="9" font-family="monospace">self.battery = Battery()</text>
+</svg>

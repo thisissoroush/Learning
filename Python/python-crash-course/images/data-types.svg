@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="860" height="500">
+  <rect width="860" height="500" fill="#1e1e2e"/>
+  <text x="430" y="38" text-anchor="middle" fill="#cdd6f4" font-size="19" font-weight="bold" font-family="monospace">Python Built-in Data Types</text>
+
+  <!-- Strings -->
+  <rect x="20" y="65" width="190" height="130" rx="8" fill="#181825" stroke="#a6e3a1" stroke-width="2"/>
+  <text x="115" y="88" text-anchor="middle" fill="#a6e3a1" font-size="13" font-weight="bold" font-family="monospace">str</text>
+  <text x="35" y="108" fill="#cdd6f4" font-size="10" font-family="monospace">'hello'  "world"</text>
+  <text x="35" y="124" fill="#cdd6f4" font-size="10" font-family="monospace">f"Hello, {name}!"</text>
+  <text x="35" y="140" fill="#585b70" font-size="10" font-family="monospace">.upper() .lower()</text>
+  <text x="35" y="156" fill="#585b70" font-size="10" font-family="monospace">.strip() .split()</text>
+  <text x="35" y="172" fill="#f38ba8" font-size="10" font-family="monospace">immutable · hashable</text>
+
+  <!-- int/float -->
+  <rect x="230" y="65" width="190" height="130" rx="8" fill="#181825" stroke="#89b4fa" stroke-width="2"/>
+  <text x="325" y="88" text-anchor="middle" fill="#89b4fa" font-size="13" font-weight="bold" font-family="monospace">int / float</text>
+  <text x="245" y="108" fill="#cdd6f4" font-size="10" font-family="monospace">42   3.14   -7</text>
+  <text x="245" y="124" fill="#cdd6f4" font-size="10" font-family="monospace">+ - * /  //  %  **</text>
+  <text x="245" y="140" fill="#585b70" font-size="10" font-family="monospace">1_000_000  (readable)</text>
+  <text x="245" y="156" fill="#585b70" font-size="10" font-family="monospace">int("42")  float("3.14")</text>
+  <text x="245" y="172" fill="#f38ba8" font-size="10" font-family="monospace">immutable · hashable</text>
+
+  <!-- bool -->
+  <rect x="440" y="65" width="190" height="130" rx="8" fill="#181825" stroke="#cba6f7" stroke-width="2"/>
+  <text x="535" y="88" text-anchor="middle" fill="#cba6f7" font-size="13" font-weight="bold" font-family="monospace">bool</text>
+  <text x="455" y="108" fill="#cdd6f4" font-size="10" font-family="monospace">True   False</text>
+  <text x="455" y="124" fill="#cdd6f4" font-size="10" font-family="monospace">and  or  not</text>
+  <text x="455" y="140" fill="#585b70" font-size="10" font-family="monospace">Falsy: 0, "", [], {}, None</text>
+  <text x="455" y="156" fill="#585b70" font-size="10" font-family="monospace">if my_list:  (truthy check)</text>
+  <text x="455" y="172" fill="#f38ba8" font-size="10" font-family="monospace">immutable · hashable</text>
+
+  <!-- None -->
+  <rect x="650" y="65" width="190" height="130" rx="8" fill="#181825" stroke="#6c7086" stroke-width="2"/>
+  <text x="745" y="88" text-anchor="middle" fill="#6c7086" font-size="13" font-weight="bold" font-family="monospace">None</text>
+  <text x="665" y="108" fill="#cdd6f4" font-size="10" font-family="monospace">None  (null/absent)</text>
+  <text x="665" y="124" fill="#cdd6f4" font-size="10" font-family="monospace">x is None  ✓</text>
+  <text x="665" y="140" fill="#f38ba8" font-size="10" font-family="monospace">x == None  ✗ (don't)</text>
+  <text x="665" y="172" fill="#f38ba8" font-size="10" font-family="monospace">immutable · singleton</text>
+
+  <!-- list -->
+  <rect x="20" y="230" width="190" height="145" rx="8" fill="#181825" stroke="#fab387" stroke-width="2"/>
+  <text x="115" y="252" text-anchor="middle" fill="#fab387" font-size="13" font-weight="bold" font-family="monospace">list</text>
+  <text x="35" y="272" fill="#cdd6f4" font-size="10" font-family="monospace">['a', 'b', 'c']</text>
+  <text x="35" y="288" fill="#585b70" font-size="10" font-family="monospace">list[0]  list[-1]  list[1:3]</text>
+  <text x="35" y="304" fill="#585b70" font-size="10" font-family="monospace">.append()  .insert()  .pop()</text>
+  <text x="35" y="320" fill="#585b70" font-size="10" font-family="monospace">.sort()  .reverse()</text>
+  <text x="35" y="336" fill="#585b70" font-size="10" font-family="monospace">sorted()  len()  min() max()</text>
+  <text x="35" y="356" fill="#a6e3a1" font-size="10" font-family="monospace">mutable · ordered</text>
+
+  <!-- tuple -->
+  <rect x="230" y="230" width="190" height="145" rx="8" fill="#181825" stroke="#94e2d5" stroke-width="2"/>
+  <text x="325" y="252" text-anchor="middle" fill="#94e2d5" font-size="13" font-weight="bold" font-family="monospace">tuple</text>
+  <text x="245" y="272" fill="#cdd6f4" font-size="10" font-family="monospace">(200, 50)  ('a', 1, True)</text>
+  <text x="245" y="288" fill="#585b70" font-size="10" font-family="monospace">tuple[0]  tuple[-1]</text>
+  <text x="245" y="304" fill="#585b70" font-size="10" font-family="monospace">single item: (3,)</text>
+  <text x="245" y="320" fill="#f38ba8" font-size="10" font-family="monospace">no item assignment!</text>
+  <text x="245" y="336" fill="#585b70" font-size="10" font-family="monospace">x, y = (10, 20)  (unpack)</text>
+  <text x="245" y="356" fill="#f38ba8" font-size="10" font-family="monospace">immutable · hashable</text>
+
+  <!-- dict -->
+  <rect x="440" y="230" width="190" height="145" rx="8" fill="#181825" stroke="#f9e2af" stroke-width="2"/>
+  <text x="535" y="252" text-anchor="middle" fill="#f9e2af" font-size="13" font-weight="bold" font-family="monospace">dict</text>
+  <text x="455" y="272" fill="#cdd6f4" font-size="10" font-family="monospace">{'key': 'value'}</text>
+  <text x="455" y="288" fill="#585b70" font-size="10" font-family="monospace">d['key']  d.get('key', def)</text>
+  <text x="455" y="304" fill="#585b70" font-size="10" font-family="monospace">.items()  .keys()  .values()</text>
+  <text x="455" y="320" fill="#585b70" font-size="10" font-family="monospace">del d['key']</text>
+  <text x="455" y="336" fill="#585b70" font-size="10" font-family="monospace">keys must be hashable</text>
+  <text x="455" y="356" fill="#a6e3a1" font-size="10" font-family="monospace">mutable · ordered (3.7+)</text>
+
+  <!-- set -->
+  <rect x="650" y="230" width="190" height="145" rx="8" fill="#181825" stroke="#89dceb" stroke-width="2"/>
+  <text x="745" y="252" text-anchor="middle" fill="#89dceb" font-size="13" font-weight="bold" font-family="monospace">set</text>
+  <text x="665" y="272" fill="#cdd6f4" font-size="10" font-family="monospace">{'a', 'b', 'c'}</text>
+  <text x="665" y="288" fill="#cdd6f4" font-size="10" font-family="monospace">set([1, 2, 2, 3])  → {1,2,3}</text>
+  <text x="665" y="304" fill="#585b70" font-size="10" font-family="monospace">|  &amp;  -  ^ (union,intersect)</text>
+  <text x="665" y="320" fill="#f38ba8" font-size="10" font-family="monospace">no duplicates, no order</text>
+  <text x="665" y="336" fill="#585b70" font-size="10" font-family="monospace">'x' in my_set  (O(1))</text>
+  <text x="665" y="356" fill="#a6e3a1" font-size="10" font-family="monospace">mutable · unordered</text>
+
+  <!-- bottom note -->
+  <text x="430" y="400" text-anchor="middle" fill="#585b70" font-size="11" font-family="monospace">Mutable objects cannot be dict keys or set elements</text>
+  <text x="430" y="420" text-anchor="middle" fill="#585b70" font-size="11" font-family="monospace">Immutable + hashable: str · int · float · bool · tuple · None</text>
+</svg>
