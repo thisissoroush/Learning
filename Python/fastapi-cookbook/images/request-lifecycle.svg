@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="860" height="500">
+  <rect width="860" height="500" fill="#1e1e2e"/>
+  <text x="430" y="38" text-anchor="middle" fill="#cdd6f4" font-size="19" font-weight="bold" font-family="monospace">FastAPI Request Lifecycle</text>
+
+  <!-- Client -->
+  <rect x="20" y="190" width="100" height="50" rx="8" fill="#313244" stroke="#89b4fa" stroke-width="2"/>
+  <text x="70" y="218" text-anchor="middle" fill="#89b4fa" font-size="12" font-family="monospace" font-weight="bold">Client</text>
+
+  <!-- Arrow right -->
+  <line x1="120" y1="215" x2="155" y2="215" stroke="#a6e3a1" stroke-width="2" marker-end="url(#arr)"/>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#a6e3a1"/></marker></defs>
+
+  <!-- Middleware stack -->
+  <rect x="155" y="80" width="160" height="280" rx="10" fill="#181825" stroke="#fab387" stroke-width="1.5"/>
+  <text x="235" y="105" text-anchor="middle" fill="#fab387" font-size="12" font-weight="bold" font-family="monospace">Middleware</text>
+  <text x="235" y="120" text-anchor="middle" fill="#585b70" font-size="10" font-family="monospace">(outermost first)</text>
+
+  <rect x="165" y="130" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="149" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">TrustedHostMiddleware</text>
+
+  <rect x="165" y="165" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="184" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">CORSMiddleware</text>
+
+  <rect x="165" y="200" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="219" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">RateLimiter</text>
+
+  <rect x="165" y="235" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="254" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">CustomMiddleware</text>
+
+  <rect x="165" y="270" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="289" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">AuthMiddleware</text>
+
+  <rect x="165" y="305" width="140" height="28" rx="5" fill="#313244" stroke="#fab387" stroke-width="1"/>
+  <text x="235" y="324" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">LoggingMiddleware</text>
+
+  <!-- Arrow -->
+  <line x1="315" y1="215" x2="350" y2="215" stroke="#a6e3a1" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Router -->
+  <rect x="350" y="160" width="140" height="110" rx="8" fill="#181825" stroke="#cba6f7" stroke-width="1.5"/>
+  <text x="420" y="183" text-anchor="middle" fill="#cba6f7" font-size="12" font-weight="bold" font-family="monospace">Router</text>
+  <text x="420" y="205" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">path matching</text>
+  <text x="420" y="222" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">method matching</text>
+  <text x="420" y="239" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">param extraction</text>
+  <text x="420" y="256" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">validation (Pydantic)</text>
+
+  <!-- Arrow -->
+  <line x1="490" y1="215" x2="525" y2="215" stroke="#a6e3a1" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Dependencies -->
+  <rect x="525" y="130" width="140" height="175" rx="8" fill="#181825" stroke="#a6e3a1" stroke-width="1.5"/>
+  <text x="595" y="153" text-anchor="middle" fill="#a6e3a1" font-size="12" font-weight="bold" font-family="monospace">Dependencies</text>
+  <text x="595" y="173" text-anchor="middle" fill="#585b70" font-size="10" font-family="monospace">Depends()</text>
+
+  <rect x="535" y="183" width="120" height="24" rx="4" fill="#313244"/>
+  <text x="595" y="199" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">get_db_session</text>
+
+  <rect x="535" y="212" width="120" height="24" rx="4" fill="#313244"/>
+  <text x="595" y="228" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">get_current_user</text>
+
+  <rect x="535" y="241" width="120" height="24" rx="4" fill="#313244"/>
+  <text x="595" y="257" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">validate_params</text>
+
+  <rect x="535" y="270" width="120" height="24" rx="4" fill="#313244"/>
+  <text x="595" y="286" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">check_rate_limit</text>
+
+  <!-- Arrow -->
+  <line x1="665" y1="215" x2="700" y2="215" stroke="#a6e3a1" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- Handler -->
+  <rect x="700" y="160" width="140" height="110" rx="8" fill="#181825" stroke="#f38ba8" stroke-width="1.5"/>
+  <text x="770" y="183" text-anchor="middle" fill="#f38ba8" font-size="12" font-weight="bold" font-family="monospace">Handler</text>
+  <text x="770" y="205" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">async def endpoint</text>
+  <text x="770" y="222" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">business logic</text>
+  <text x="770" y="239" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">DB operations</text>
+  <text x="770" y="256" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">return response</text>
+
+  <!-- Response arrow back -->
+  <line x1="770" y1="270" x2="770" y2="390" stroke="#f9e2af" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="770" y1="390" x2="70" y2="390" stroke="#f9e2af" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="70" y1="390" x2="70" y2="270" stroke="#f9e2af" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+  <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f9e2af"/></marker></defs>
+  <text x="430" y="412" text-anchor="middle" fill="#f9e2af" font-size="11" font-family="monospace">Response (middleware unwraps in reverse)</text>
+
+  <!-- Background tasks note -->
+  <rect x="700" y="305" width="140" height="50" rx="6" fill="#181825" stroke="#89b4fa" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="770" y="325" text-anchor="middle" fill="#89b4fa" font-size="10" font-family="monospace">BackgroundTasks</text>
+  <text x="770" y="342" text-anchor="middle" fill="#585b70" font-size="10" font-family="monospace">run after response</text>
+
+  <line x1="770" y1="270" x2="770" y2="305" stroke="#89b4fa" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Bottom labels -->
+  <text x="430" y="470" text-anchor="middle" fill="#585b70" font-size="11" font-family="monospace">Exception at any stage → exception handler → error response to client</text>
+</svg>

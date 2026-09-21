@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="800" height="520">
+  <rect width="800" height="520" fill="#1e1e2e"/>
+  <text x="400" y="38" text-anchor="middle" fill="#cdd6f4" font-size="19" font-weight="bold" font-family="monospace">FastAPI Auth Patterns</text>
+
+  <!-- OAuth2 / JWT -->
+  <rect x="20" y="65" width="230" height="200" rx="10" fill="#181825" stroke="#a6e3a1" stroke-width="2"/>
+  <text x="135" y="90" text-anchor="middle" fill="#a6e3a1" font-size="13" font-weight="bold" font-family="monospace">OAuth2 / JWT</text>
+  <text x="35" y="112" fill="#cdd6f4" font-size="10" font-family="monospace">1. POST /token</text>
+  <text x="35" y="130" fill="#585b70" font-size="10" font-family="monospace">   username + password</text>
+  <text x="35" y="150" fill="#cdd6f4" font-size="10" font-family="monospace">2. Server validates</text>
+  <text x="35" y="168" fill="#585b70" font-size="10" font-family="monospace">   returns access_token</text>
+  <text x="35" y="188" fill="#cdd6f4" font-size="10" font-family="monospace">3. Client sends:</text>
+  <text x="35" y="206" fill="#a6e3a1" font-size="10" font-family="monospace">   Authorization: Bearer &lt;token&gt;</text>
+  <text x="35" y="226" fill="#cdd6f4" font-size="10" font-family="monospace">4. Depends(oauth2_scheme)</text>
+  <text x="35" y="244" fill="#585b70" font-size="10" font-family="monospace">   decodes + validates JWT</text>
+
+  <!-- RBAC -->
+  <rect x="285" y="65" width="230" height="200" rx="10" fill="#181825" stroke="#89b4fa" stroke-width="2"/>
+  <text x="400" y="90" text-anchor="middle" fill="#89b4fa" font-size="13" font-weight="bold" font-family="monospace">RBAC</text>
+  <text x="300" y="112" fill="#cdd6f4" font-size="10" font-family="monospace">Role: free | premium | admin</text>
+
+  <rect x="300" y="122" width="200" height="24" rx="4" fill="#313244" stroke="#89b4fa" stroke-width="1"/>
+  <text x="400" y="138" text-anchor="middle" fill="#89b4fa" font-size="10" font-family="monospace">get_current_user</text>
+
+  <line x1="400" y1="146" x2="400" y2="158" stroke="#585b70" stroke-width="1.5"/>
+
+  <rect x="300" y="158" width="200" height="24" rx="4" fill="#313244" stroke="#a6e3a1" stroke-width="1"/>
+  <text x="400" y="174" text-anchor="middle" fill="#a6e3a1" font-size="10" font-family="monospace">get_premium_user</text>
+
+  <line x1="400" y1="182" x2="400" y2="194" stroke="#585b70" stroke-width="1.5"/>
+
+  <rect x="300" y="194" width="200" height="24" rx="4" fill="#313244" stroke="#f38ba8" stroke-width="1"/>
+  <text x="400" y="210" text-anchor="middle" fill="#f38ba8" font-size="10" font-family="monospace">get_admin_user</text>
+
+  <text x="400" y="238" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Chain Depends() ↑</text>
+  <text x="400" y="256" text-anchor="middle" fill="#585b70" font-size="10" font-family="monospace">each checks role</text>
+
+  <!-- API Key -->
+  <rect x="550" y="65" width="230" height="200" rx="10" fill="#181825" stroke="#fab387" stroke-width="2"/>
+  <text x="665" y="90" text-anchor="middle" fill="#fab387" font-size="13" font-weight="bold" font-family="monospace">API Key</text>
+  <text x="565" y="112" fill="#cdd6f4" font-size="10" font-family="monospace">Header: X-API-Key: abc123</text>
+  <rect x="565" y="122" width="200" height="24" rx="4" fill="#313244"/>
+  <text x="665" y="138" text-anchor="middle" fill="#fab387" font-size="10" font-family="monospace">APIKeyHeader(name="X-API-Key")</text>
+  <text x="565" y="162" fill="#cdd6f4" font-size="10" font-family="monospace">def verify_api_key(</text>
+  <text x="565" y="178" fill="#cdd6f4" font-size="10" font-family="monospace">  key = Security(API_KEY_HEADER)</text>
+  <text x="565" y="194" fill="#cdd6f4" font-size="10" font-family="monospace">):</text>
+  <text x="565" y="210" fill="#a6e3a1" font-size="10" font-family="monospace">  if key not in valid_keys:</text>
+  <text x="565" y="226" fill="#f38ba8" font-size="10" font-family="monospace">    raise HTTPException(403)</text>
+  <text x="565" y="248" fill="#585b70" font-size="10" font-family="monospace">Use Security() not Depends()</text>
+
+  <!-- GitHub OAuth -->
+  <rect x="20" y="300" width="230" height="190" rx="10" fill="#181825" stroke="#cba6f7" stroke-width="2"/>
+  <text x="135" y="325" text-anchor="middle" fill="#cba6f7" font-size="13" font-weight="bold" font-family="monospace">GitHub OAuth</text>
+  <text x="35" y="347" fill="#cdd6f4" font-size="10" font-family="monospace">1. GET /login/github</text>
+  <text x="35" y="363" fill="#585b70" font-size="10" font-family="monospace">   → redirect to GitHub</text>
+  <text x="35" y="383" fill="#cdd6f4" font-size="10" font-family="monospace">2. GitHub → callback?code=</text>
+  <text x="35" y="403" fill="#cdd6f4" font-size="10" font-family="monospace">3. Exchange code → token</text>
+  <text x="35" y="423" fill="#cdd6f4" font-size="10" font-family="monospace">4. GET github.com/user</text>
+  <text x="35" y="443" fill="#a6e3a1" font-size="10" font-family="monospace">   → user info</text>
+  <text x="35" y="463" fill="#cdd6f4" font-size="10" font-family="monospace">5. Issue own JWT token</text>
+  <text x="35" y="480" fill="#585b70" font-size="10" font-family="monospace">   RedirectResponse</text>
+
+  <!-- MFA -->
+  <rect x="285" y="300" width="230" height="190" rx="10" fill="#181825" stroke="#94e2d5" stroke-width="2"/>
+  <text x="400" y="325" text-anchor="middle" fill="#94e2d5" font-size="13" font-weight="bold" font-family="monospace">MFA (TOTP)</text>
+  <text x="300" y="347" fill="#cdd6f4" font-size="10" font-family="monospace">Setup:</text>
+  <text x="300" y="363" fill="#a6e3a1" font-size="10" font-family="monospace">  secret = pyotp.random_base32()</text>
+  <text x="300" y="379" fill="#a6e3a1" font-size="10" font-family="monospace">  totp = pyotp.TOTP(secret)</text>
+  <text x="300" y="395" fill="#cdd6f4" font-size="10" font-family="monospace">  return QR provisioning_uri</text>
+  <text x="300" y="415" fill="#cdd6f4" font-size="10" font-family="monospace">Verify:</text>
+  <text x="300" y="431" fill="#a6e3a1" font-size="10" font-family="monospace">  totp = pyotp.TOTP(db_secret)</text>
+  <text x="300" y="447" fill="#a6e3a1" font-size="10" font-family="monospace">  totp.verify(code)  → bool</text>
+  <text x="300" y="467" fill="#585b70" font-size="10" font-family="monospace">  30s time window</text>
+
+  <!-- User session -->
+  <rect x="550" y="300" width="230" height="190" rx="10" fill="#181825" stroke="#f9e2af" stroke-width="2"/>
+  <text x="665" y="325" text-anchor="middle" fill="#f9e2af" font-size="13" font-weight="bold" font-family="monospace">User Sessions</text>
+  <text x="565" y="347" fill="#cdd6f4" font-size="10" font-family="monospace">Cookie-based sessions:</text>
+  <text x="565" y="365" fill="#a6e3a1" font-size="10" font-family="monospace">  SessionMiddleware</text>
+  <text x="565" y="381" fill="#a6e3a1" font-size="10" font-family="monospace">  request.session["user"]</text>
+  <text x="565" y="401" fill="#cdd6f4" font-size="10" font-family="monospace">DB-backed sessions:</text>
+  <text x="565" y="417" fill="#a6e3a1" font-size="10" font-family="monospace">  session_id in cookie</text>
+  <text x="565" y="433" fill="#a6e3a1" font-size="10" font-family="monospace">  data in Redis/DB</text>
+  <text x="565" y="453" fill="#cdd6f4" font-size="10" font-family="monospace">vs JWT:</text>
+  <text x="565" y="469" fill="#585b70" font-size="10" font-family="monospace">  stateful vs stateless</text>
+</svg>
