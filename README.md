@@ -22,7 +22,7 @@ A curated, growing collection of **book summaries, key takeaways, structured not
 | 🔷 **C# / .NET** | Summaries of C# books — async/await, parallel, reactive, and dataflow | [C# - .Net/ →](./C%23%20-%20.Net/README.md) |
 | 🧠 **Managerial & Leadership** | Summaries of management, leadership, and productivity books | [Managerial/ →](./Managerial/README.md) |
 | 🛠️ **Pragmatic Programming** | Summaries of books on software craft, philosophy, and engineering practices | [Pragmatic/ →](./Pragmatic/README.md) |
-| 🐍 **Python / Django** | Summaries of Python web development books — Django, Docker, production practices | [Python/ →](./Python/README.md) |
+| 🐍 **Python** | Summaries of Python books — Architecture patterns, DDD, TDD, Django, Docker | [Python/ →](./Python/README.md) |
 | ☕ **Java** | Interview preparation for Java, Spring Boot, Hibernate, Kafka, gRPC, and more | [Java/ →](./Java/README.md) |
 | 🏗️ **Infrastructure** | Docker, Kubernetes, Kafka, RabbitMQ, Redis, Elasticsearch interview questions | [Infrastructure/ →](./Infrastructure/README.md) |
 
@@ -196,9 +196,10 @@ Learning/
 | 🛠️ Pragmatic | [System Design Interview Vol. 2](./Pragmatic/system-design-interview-v2/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [System Design Interview (2nd Ed.)](./Pragmatic/system-design-interview/README.md) | ✅ Complete |
 | 🛠️ Pragmatic | [Cracking the Coding Interview, 6th Ed.](./Pragmatic/cracking-the-coding-interview/README.md) | ✅ Complete |
+| 🐍 Python | [Architecture Patterns with Python](./Python/architecture-patterns-with-python/README.md) | ✅ Complete |
 | 🐍 Python | [Django for Professionals](./Python/django-for-professionals/README.md) | ✅ Complete |
 | 🐍 Python | [Two Scoops of Django 3.x](./Python/two-scoops-of-django/README.md) | ✅ Complete |
-| | **Total** | **14 complete · 4 in progress** |
+| | **Total** | **15 complete · 4 in progress** |
 
 ---
 

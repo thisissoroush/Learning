@@ -14,18 +14,27 @@ This section contains structured notes, highlights, and summaries from books foc
 
 | # | Title | Author | Status |
 |---|-------|--------|--------|
-| 1 | [Django for Professionals](./django-for-professionals/README.md) | William S. Vincent | ✅ Complete |
-| 2 | [Two Scoops of Django 3.x](./two-scoops-of-django/README.md) | Daniel & Audrey Feldroy | ✅ Complete |
+| 1 | [Architecture Patterns with Python](./architecture-patterns-with-python/README.md) | Harry Percival & Bob Gregory | ✅ Complete |
+| 2 | [Django for Professionals](./django-for-professionals/README.md) | William S. Vincent | ✅ Complete |
+| 3 | [Two Scoops of Django 3.x](./two-scoops-of-django/README.md) | Daniel & Audrey Feldroy | ✅ Complete |
+| 4 | [Fluent Python 2e](./fluent-python/README.md) | Luciano Ramalho | ✅ Complete |
 
-### Book 1: Django for Professionals
+### Book 1: Architecture Patterns with Python
+> **Focus:** Domain-Driven Design, TDD, Event-Driven Architecture
+> **Best for:** Building maintainable, testable Python applications
+> 13 chapters covering Repository, Service Layer, Unit of Work, Aggregates, Events, CQRS
+
+### Book 2: Django for Professionals
 > **Focus:** Step-by-step production project (Bookstore)
 > **Best for:** Learning professional Django from scratch
 > 19 chapters covering Docker, PostgreSQL, auth, testing, security, deployment
 
-### Book 2: Two Scoops of Django 3.x
-> **Focus:** Best practices reference (topic-by-topic)
-> **Best for:** Improving an existing Django project's quality
-> 38 chapters covering every Django topic with opinionated recommendations
+### Book 4: Fluent Python 2e
+> **Focus:** Idiomatic Python — the data model, sequences, generators, decorators, async, metaprogramming
+> **Best for:** Developers who know Python basics and want to write truly Pythonic code
+> 24 chapters covering every advanced Python feature with clear examples and type hints throughout
+
+
 
 ---
 

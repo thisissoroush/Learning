@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <rect width="800" height="500" fill="#1e1e2e"/>
+  <text x="400" y="40" text-anchor="middle" fill="#cdd6f4" font-size="20" font-weight="bold" font-family="monospace">Python Data Model — Special Methods</text>
+
+  <!-- Central Python object -->
+  <rect x="300" y="180" width="200" height="60" rx="10" fill="#313244" stroke="#89b4fa" stroke-width="2"/>
+  <text x="400" y="205" text-anchor="middle" fill="#89b4fa" font-size="14" font-family="monospace">Your Class</text>
+  <text x="400" y="225" text-anchor="middle" fill="#a6adc8" font-size="11" font-family="monospace">implements __dunder__</text>
+
+  <!-- Protocol boxes -->
+  <!-- Collection protocol -->
+  <rect x="50" y="80" width="160" height="80" rx="8" fill="#313244" stroke="#a6e3a1" stroke-width="1.5"/>
+  <text x="130" y="105" text-anchor="middle" fill="#a6e3a1" font-size="12" font-family="monospace" font-weight="bold">Collection</text>
+  <text x="130" y="122" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__len__</text>
+  <text x="130" y="138" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__getitem__</text>
+  <text x="130" y="154" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__contains__</text>
+
+  <!-- Iteration -->
+  <rect x="50" y="200" width="160" height="65" rx="8" fill="#313244" stroke="#f38ba8" stroke-width="1.5"/>
+  <text x="130" y="222" text-anchor="middle" fill="#f38ba8" font-size="12" font-family="monospace" font-weight="bold">Iteration</text>
+  <text x="130" y="240" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__iter__</text>
+  <text x="130" y="256" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__next__</text>
+
+  <!-- Numeric -->
+  <rect x="590" y="80" width="160" height="95" rx="8" fill="#313244" stroke="#fab387" stroke-width="1.5"/>
+  <text x="670" y="105" text-anchor="middle" fill="#fab387" font-size="12" font-family="monospace" font-weight="bold">Arithmetic</text>
+  <text x="670" y="123" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__add__ / __radd__</text>
+  <text x="670" y="139" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__mul__ / __rmul__</text>
+  <text x="670" y="155" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__abs__ / __neg__</text>
+  <text x="670" y="171" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__eq__ / __lt__</text>
+
+  <!-- String repr -->
+  <rect x="590" y="200" width="160" height="80" rx="8" fill="#313244" stroke="#cba6f7" stroke-width="1.5"/>
+  <text x="670" y="222" text-anchor="middle" fill="#cba6f7" font-size="12" font-family="monospace" font-weight="bold">Representation</text>
+  <text x="670" y="240" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__repr__</text>
+  <text x="670" y="256" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__str__</text>
+  <text x="670" y="272" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__format__</text>
+
+  <!-- Context -->
+  <rect x="50" y="310" width="160" height="65" rx="8" fill="#313244" stroke="#94e2d5" stroke-width="1.5"/>
+  <text x="130" y="332" text-anchor="middle" fill="#94e2d5" font-size="12" font-family="monospace" font-weight="bold">Context Mgr</text>
+  <text x="130" y="350" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__enter__</text>
+  <text x="130" y="366" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__exit__</text>
+
+  <!-- Callable -->
+  <rect x="590" y="310" width="160" height="65" rx="8" fill="#313244" stroke="#f9e2af" stroke-width="1.5"/>
+  <text x="670" y="332" text-anchor="middle" fill="#f9e2af" font-size="12" font-family="monospace" font-weight="bold">Callable</text>
+  <text x="670" y="350" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__call__</text>
+  <text x="670" y="366" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">instance(args)</text>
+
+  <!-- Attribute access -->
+  <rect x="300" y="310" width="200" height="80" rx="8" fill="#313244" stroke="#89dceb" stroke-width="1.5"/>
+  <text x="400" y="332" text-anchor="middle" fill="#89dceb" font-size="12" font-family="monospace" font-weight="bold">Attribute Access</text>
+  <text x="400" y="350" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__getattr__</text>
+  <text x="400" y="366" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__setattr__</text>
+  <text x="400" y="382" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">__delattr__</text>
+
+  <!-- Arrows -->
+  <line x1="210" y1="120" x2="300" y2="200" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="210" y1="232" x2="300" y2="210" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="590" y1="127" x2="500" y2="200" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="590" y1="240" x2="500" y2="220" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="210" y1="342" x2="300" y2="360" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="590" y1="342" x2="500" y2="360" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="400" y1="240" x2="400" y2="310" stroke="#a6adc8" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Python interpreter box -->
+  <rect x="250" y="430" width="300" height="50" rx="8" fill="#181825" stroke="#6c7086" stroke-width="1"/>
+  <text x="400" y="452" text-anchor="middle" fill="#6c7086" font-size="11" font-family="monospace">Python Interpreter</text>
+  <text x="400" y="470" text-anchor="middle" fill="#585b70" font-size="10" font-family="monospace">calls special methods automatically</text>
+</svg>

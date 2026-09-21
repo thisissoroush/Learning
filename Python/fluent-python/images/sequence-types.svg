@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <rect width="800" height="480" fill="#1e1e2e"/>
+  <text x="400" y="40" text-anchor="middle" fill="#cdd6f4" font-size="20" font-weight="bold" font-family="monospace">Python Sequence Types</text>
+
+  <!-- Mutable column -->
+  <text x="200" y="80" text-anchor="middle" fill="#a6e3a1" font-size="14" font-weight="bold" font-family="monospace">Mutable</text>
+  <!-- list -->
+  <rect x="60" y="100" width="280" height="80" rx="8" fill="#313244" stroke="#a6e3a1" stroke-width="2"/>
+  <text x="200" y="125" text-anchor="middle" fill="#a6e3a1" font-size="14" font-family="monospace" font-weight="bold">list</text>
+  <text x="200" y="145" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Mixed types · O(1) append · O(n) insert</text>
+  <text x="200" y="162" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">[1, 'two', 3.0, True]</text>
+  <!-- bytearray -->
+  <rect x="60" y="200" width="280" height="70" rx="8" fill="#313244" stroke="#f38ba8" stroke-width="1.5"/>
+  <text x="200" y="222" text-anchor="middle" fill="#f38ba8" font-size="13" font-family="monospace" font-weight="bold">bytearray</text>
+  <text x="200" y="242" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Mutable byte sequence</text>
+  <text x="200" y="258" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">bytearray(b'hello')</text>
+  <!-- array.array -->
+  <rect x="60" y="290" width="280" height="70" rx="8" fill="#313244" stroke="#fab387" stroke-width="1.5"/>
+  <text x="200" y="312" text-anchor="middle" fill="#fab387" font-size="13" font-family="monospace" font-weight="bold">array.array</text>
+  <text x="200" y="332" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Homogeneous · C-backed · memory efficient</text>
+  <text x="200" y="348" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">array('d', [1.0, 2.5, 3.14])</text>
+
+  <!-- Immutable column -->
+  <text x="600" y="80" text-anchor="middle" fill="#89b4fa" font-size="14" font-weight="bold" font-family="monospace">Immutable</text>
+  <!-- tuple -->
+  <rect x="460" y="100" width="280" height="80" rx="8" fill="#313244" stroke="#89b4fa" stroke-width="2"/>
+  <text x="600" y="125" text-anchor="middle" fill="#89b4fa" font-size="14" font-family="monospace" font-weight="bold">tuple</text>
+  <text x="600" y="145" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Immutable · hashable · record semantics</text>
+  <text x="600" y="162" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">(lat, lon) = (51.5, -0.1)</text>
+  <!-- str -->
+  <rect x="460" y="200" width="280" height="70" rx="8" fill="#313244" stroke="#cba6f7" stroke-width="1.5"/>
+  <text x="600" y="222" text-anchor="middle" fill="#cba6f7" font-size="13" font-family="monospace" font-weight="bold">str</text>
+  <text x="600" y="242" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Unicode text sequence</text>
+  <text x="600" y="258" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">'café' · immutable · hashable</text>
+  <!-- bytes -->
+  <rect x="460" y="290" width="280" height="70" rx="8" fill="#313244" stroke="#94e2d5" stroke-width="1.5"/>
+  <text x="600" y="312" text-anchor="middle" fill="#94e2d5" font-size="13" font-family="monospace" font-weight="bold">bytes</text>
+  <text x="600" y="332" text-anchor="middle" fill="#cdd6f4" font-size="10" font-family="monospace">Immutable byte sequence</text>
+  <text x="600" y="348" text-anchor="middle" fill="#a6adc8" font-size="10" font-family="monospace">b'hello' · hashable</text>
+
+  <!-- Divider -->
+  <line x1="400" y1="70" x2="400" y2="390" stroke="#45475a" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- Common protocol box -->
+  <rect x="200" y="400" width="400" height="55" rx="8" fill="#181825" stroke="#6c7086" stroke-width="1"/>
+  <text x="400" y="422" text-anchor="middle" fill="#89b4fa" font-size="12" font-family="monospace" font-weight="bold">Sequence Protocol</text>
+  <text x="400" y="442" text-anchor="middle" fill="#6c7086" font-size="10" font-family="monospace">__len__ · __getitem__ · __contains__ · __iter__ · __reversed__</text>
+</svg>
